@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(game C)
+project(Cokoban VERSION 1.0 LANGUAGES C)
 
 set(SDL_DIR ${CMAKE_SOURCE_DIR}/vendors/SDL2)
 set(OUT_DIR ${CMAKE_SOURCE_DIR}/bin)
