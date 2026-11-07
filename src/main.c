@@ -1,81 +1,72 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL2_gfxPrimitives.h>
 #include <math.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
+
+#include <vec2/vec2.h>
+#include <tui/tui.h>
+#include <econio/econio.h>
  
 int main(int argc, char *argv[]) {
-    /* SDL inicializálása és ablak megnyitása */
-    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-        SDL_Log("Nem indithato az SDL: %s", SDL_GetError());
-        exit(1);
-    }
-    SDL_Window *window = SDL_CreateWindow("SDL peldaprogram", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 440, 360, 0);
-    if (window == NULL) {
-        SDL_Log("Nem hozhato letre az ablak: %s", SDL_GetError());
-        exit(1);
-    }
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-    if (renderer == NULL) {
-        SDL_Log("Nem hozhato letre a megjelenito: %s", SDL_GetError());
-        exit(1);
-    }
-    SDL_RenderClear(renderer);
-    
-    /* az esemenyvezerelt hurok */
-    bool quit = false;
-    bool click = false;
-    int elozox = 0;
-    int elozoy = 0;
-    while (!quit) {
-        SDL_Event event;
-        SDL_WaitEvent(&event);
- 
-        bool rajzoltam = false;
- 
-        switch (event.type) {
-            /* eger kattintas */
-            case SDL_MOUSEBUTTONDOWN:
-                if (event.button.button == SDL_BUTTON_LEFT) {
-                    click = true;
-                    elozox = event.button.x;
-                    elozoy = event.button.y;
-                }
-                else if (event.button.button == SDL_BUTTON_RIGHT) {
-                    boxColor(renderer, 0, 0, 439, 359, 0x000000FF);
-                    rajzoltam = true;
-                }
-                break;	
-            /* egergomb elengedese */
-            case SDL_MOUSEBUTTONUP:
-                if (event.button.button == SDL_BUTTON_LEFT) {
-                    click = false;
-                }
-                break;
-            /* eger mozdulat */
-            case SDL_MOUSEMOTION:
-                if (click) {
-                    aalineColor(renderer, elozox, elozoy,
-                                event.motion.x, event.motion.y, 0xFFFFFFFF);
-                    rajzoltam = true;
-                }
-                /* a kovetkezo mozdulat esemenyhez */
-                elozox = event.motion.x;
-                elozoy = event.motion.y;
-                break;
-            /* ablak bezarasa */
-            case SDL_QUIT:
-                quit = true;
-                break;
+    // Init
+    econio_set_title("python-econio test");
+
+    // Positioning;
+    econio_clrscr();
+    econio_gotoxy(0, 0);
+    econio_textcolor(COL_LIGHTGREEN);
+    printf("Hello");
+    econio_gotoxy(10, 0);
+    econio_textbackground(COL_LIGHTBLUE);
+    printf("world!");
+    printf("\n");
+
+    // Color combinations;
+    for (int b = 0; b < 16; ++b) {
+        econio_gotoxy(5, 5+b);
+        for (int t = 0; t < 16; ++t) {
+            econio_textcolor(t);
+            econio_textbackground(b);
+            printf(" X ");
         }
- 
-		boxColor(renderer, 10, 10, 30, 30, 0xFF0000FF);
- 
-        if (rajzoltam)
-            SDL_RenderPresent(renderer);
+        printf("\n");
     }
- 
-    SDL_Quit();
- 
+    printf("\n");
+
+    // Raw input;
+    econio_textbackground(COL_RESET);
+    econio_textcolor(COL_RESET);
+    printf("Raw input test, press keys and then Enter:\n");
+    econio_rawmode();
+    while (true) {
+        int ch = econio_getch();
+        if (ch == KEY_ENTER)
+            break;
+        printf("%d ", ch);
+    }
+    printf("\n");
+    econio_normalmode();
+
+    // Raw input buffering;
+    printf("Raw input buffering test, 3s delay, press any keys\n");
+    econio_rawmode();
+    econio_sleep(3);
+    if (!econio_kbhit()) {
+        printf("No keys pressed.");
+    } else {
+        while (econio_kbhit()) {
+            printf("%d ", econio_getch());
+        }
+        printf("\n");
+    }
+    printf("\n");
+    econio_normalmode();
+
+    // Normal input;
+    char name[100];
+    printf("Enter your name: ");
+    scanf("%s", name);
+    printf("Hello, %s", name);
+    
     return 0;
 }
