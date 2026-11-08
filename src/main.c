@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include <vec2/vec2.h>
 #include <tui/tui.h>
@@ -13,17 +14,18 @@ typedef struct {
     Vec2 size;
     char **map;
     int wallcount;
+    int boxcount;
 } State;
 
 // from: http://sokoban.org/about_sokoban.php 
 typedef enum {
-    MAN = '@',
-    MAN_ON_GOAL = '+',
-    BOX = '$',
-    BOX_ON_GOAL = '*',
-    WALL = '#',
-    GOAL = '.',
-    FLOOR  = ' ',
+    CT_MAN = '@',
+    CT_MAN_ON_GOAL = '+',
+    CT_BOX = '$',
+    CT_BOX_ON_GOAL = '*',
+    CT_WALL = '#',
+    CT_GOAL = '.',
+    CT_FLOOR  = ' ',
 } CellType;
 
 typedef enum {
@@ -47,6 +49,7 @@ int load_level(char *name, State *state){
     state->size.x = 0;
     state->size.y = 0;
     state->wallcount = 0;
+    state->boxcount = 0;
 
     int char_count = 0;
     char c;
@@ -73,14 +76,26 @@ int load_level(char *name, State *state){
             switch(c){
                 case '\n':
                     ungetc('\n', file);
-                    state->map[y][x] = FLOOR;
+                    state->map[y][x] = CT_FLOOR;
                     break;
-                case WALL:
+                case CT_WALL:
                     state->wallcount++;
                     state->map[y][x] = c;
                     break;
-                case MAN:
+                case CT_MAN:
                     state->player = (Vec2){x, y};
+                    state->map[y][x] = c;
+                    break;
+                case CT_MAN_ON_GOAL:
+                    state->player = (Vec2){x, y};
+                    state->map[y][x] = c;
+                    break;
+                case CT_BOX:
+                    state->boxcount++;
+                    state->map[y][x] = c;
+                    break;
+                case CT_BOX_ON_GOAL:
+                    state->boxcount++;
                     state->map[y][x] = c;
                     break;
                 default:
@@ -95,7 +110,7 @@ int load_level(char *name, State *state){
 }
 
 void game_print(State *s){
-    econio_clrscr();
+    econio_gotoxy(0, 0);
     char c;
     for(int y = 0; y < s->size.y; ++y){
         for(int x = 0; x < s->size.x; ++x){
@@ -105,43 +120,58 @@ void game_print(State *s){
     }
 }
 
-int virtual_move_player(Direction dir, State *dst, State *src){
-    #define DPX (int)dst->player.x //I'll fix Vec2 library later 
-    #define DPY (int)dst->player.y //till then this will do
-    #define SPX (int)src->player.x //I'll fix Vec2 library later 
-    #define SPY (int)src->player.y //till then this will do
+int virtual_move_player(Direction dir, State *dst){
+    #undef DST_PLAYER_CELL
+    #define DST_PLAYER_CELL dst->map[(int)dst->player.y][(int)dst->player.x]
     switch (dir){
         case DIR_UP:
-            dst->map[DPY][DPX] = ' ';
+            DST_PLAYER_CELL = DST_PLAYER_CELL == CT_MAN_ON_GOAL ? CT_GOAL : CT_FLOOR;
             dst->player.y = fmax(dst->player.y - 1, 0); 
-            dst->map[DPY][DPX] = '@';
+            if(DST_PLAYER_CELL == CT_GOAL || DST_PLAYER_CELL == CT_BOX_ON_GOAL){
+                DST_PLAYER_CELL = CT_MAN_ON_GOAL;
+            }else{
+                DST_PLAYER_CELL = CT_MAN;
+            }
             break;
         case DIR_DOWN:
-            dst->map[DPY][DPX] = ' ';
+            DST_PLAYER_CELL = DST_PLAYER_CELL == CT_MAN_ON_GOAL ? CT_GOAL : CT_FLOOR;
             dst->player.y = fmin(dst->player.y + 1, dst->size.y); 
-            dst->map[DPY][DPX] = '@';
+            if(DST_PLAYER_CELL == CT_GOAL || DST_PLAYER_CELL == CT_BOX_ON_GOAL){
+                DST_PLAYER_CELL = CT_MAN_ON_GOAL;
+            }else{
+                DST_PLAYER_CELL = CT_MAN;
+            }
             break;
         case DIR_LEFT:
-            dst->map[DPY][DPX] = ' ';
+            DST_PLAYER_CELL = DST_PLAYER_CELL == CT_MAN_ON_GOAL ? CT_GOAL : CT_FLOOR;
             dst->player.x = fmax(dst->player.x - 1, 0); 
-            dst->map[DPY][DPX] = '@';
+            if(DST_PLAYER_CELL == CT_GOAL || DST_PLAYER_CELL == CT_BOX_ON_GOAL){
+                DST_PLAYER_CELL = CT_MAN_ON_GOAL;
+            }else{
+                DST_PLAYER_CELL = CT_MAN;
+            }
             break;
         case DIR_RIGHT:
-            dst->map[DPY][DPX] = ' ';
+            DST_PLAYER_CELL = DST_PLAYER_CELL == CT_MAN_ON_GOAL ? CT_GOAL : CT_FLOOR;
             dst->player.x = fmin(dst->player.x + 1, dst->size.x); 
-            dst->map[DPY][DPX] = '@';
+            if(DST_PLAYER_CELL == CT_GOAL || DST_PLAYER_CELL == CT_BOX_ON_GOAL){
+                DST_PLAYER_CELL = CT_MAN_ON_GOAL;
+            }else{
+                DST_PLAYER_CELL = CT_MAN;
+            }
             break;
         
         default:
             break;
     }
+    #undef DST_PLAYER_CELL
 }
 
-int count_walls(State *state){
+int count_celltype(State *state, CellType ct){
     int count = 0;
     for(int y = 0; y < state->size.y; ++y){
         for(int x = 0; x < state->size.x; ++x){
-            if(state->map[y][x] == WALL) ++count;
+            if(state->map[y][x] == ct) ++count;
         }
     }
     return count;
@@ -175,6 +205,24 @@ void free_state(State *state){
     free(state->map);
 }
 
+void resolve_box_collision(Direction dir, State *state){
+    Vec2 target = state->player;
+    #undef TARGET_CELL
+    #define TARGET_CELL state->map[(int)target.y][(int)target.x]
+    
+    do {
+        switch (dir) { 
+            case DIR_UP:    --target.y; break;
+            case DIR_DOWN:  ++target.y; break;
+            case DIR_LEFT:  --target.x; break;
+            case DIR_RIGHT: ++target.x; break;
+        }
+    } while (TARGET_CELL == CT_BOX || TARGET_CELL == CT_BOX_ON_GOAL);
+   
+    TARGET_CELL = TARGET_CELL == CT_GOAL ? CT_BOX_ON_GOAL : CT_BOX;
+    #undef TARGET_CELL
+}
+
 /*
     Mozgatja a játékost a megadott irányba, ha lehetséges.
     Visszatérési érték: 0 -> sikeres mozgás, 1 -> sikertelen mozgás
@@ -183,7 +231,12 @@ int move_player(Direction dir, State *state){
     State new_state = create_copy_state(state);
 
     virtual_move_player(dir, &new_state);
-    if(state->wallcount != count_walls(&new_state)){ //not super efficient collision check
+    if(state->boxcount != count_celltype(&new_state, CT_BOX) + count_celltype(&new_state, CT_BOX_ON_GOAL)){
+        resolve_box_collision(dir, &new_state);
+    } 
+
+    //not the most efficient thing in the world, but at least it's readable (it ain't) 
+    if(state->wallcount != count_celltype(&new_state, CT_WALL)){ 
         free_state(&new_state);
         return 1; 
     } 
@@ -203,8 +256,10 @@ void game_start(){
     State game_state;
     load_level("level001", &game_state);
 
-    bool exit = false;
     econio_rawmode();
+    econio_clrscr();
+
+    bool exit = false;
     while (!exit)
     {
         game_print(&game_state);
@@ -226,6 +281,11 @@ void game_start(){
                 exit = true;
             break;
         }
+
+        //just to be safe
+        assert(count_celltype(&game_state, CT_BOX) + count_celltype(&game_state, CT_BOX_ON_GOAL) == game_state.boxcount); 
+        assert(count_celltype(&game_state, CT_WALL) == game_state.wallcount); 
+        assert(count_celltype(&game_state, CT_BOX) == count_celltype(&game_state, CT_GOAL) + count_celltype(&game_state, CT_MAN_ON_GOAL)); 
     }
 
     game_end(&game_state);
