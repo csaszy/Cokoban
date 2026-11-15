@@ -8,7 +8,11 @@ add_subdirectory(libs/tui)
 add_subdirectory(libs/econio)
 
 add_executable(game src/main.c
-    src/debugmalloc.h)
+    src/debugmalloc.h
+    src/levels.c
+    src/levels.h
+    src/game.c
+    src/game.h)
 
 set_target_properties(game PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR})
 
