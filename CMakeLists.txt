@@ -13,3 +13,9 @@ add_executable(game src/main.c
 set_target_properties(game PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR})
 
 target_link_libraries(game vec2 tui econio)
+
+# from: https://stackoverflow.com/questions/42476765/copying-assets-directory-from-source-to-build-directory-in-cmake
+add_custom_target(copy_assets
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/assets ${OUT_DIR}/assets
+)
+add_dependencies(game copy_assets)

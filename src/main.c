@@ -38,9 +38,9 @@ typedef enum {
     
 int load_level(char *name, State *state){
     char path[256];
-    sprintf(path, "levels/%s.xsb", name);
+    sprintf(path, ".\\assets\\levels\\%s.xsb", name);
 
-    FILE *file = fopen(".\\assets\\levels\\level001.xsb", "r");
+    FILE *file = fopen(path, "r");
     if(file == NULL){
         perror("Level nem található");
         return 1;
@@ -114,7 +114,7 @@ void game_print(State *s){
     char c;
     for(int y = 0; y < s->size.y; ++y){
         for(int x = 0; x < s->size.x; ++x){
-            printf("%c", s->map[y][x]);
+            printf(" %c", s->map[y][x]);
         }
         printf("\n");
     }
@@ -223,10 +223,6 @@ void resolve_box_collision(Direction dir, State *state){
     #undef TARGET_CELL
 }
 
-/*
-    Mozgatja a játékost a megadott irányba, ha lehetséges.
-    Visszatérési érték: 0 -> sikeres mozgás, 1 -> sikertelen mozgás
-*/
 int move_player(Direction dir, State *state){
     State new_state = create_copy_state(state);
 
@@ -235,7 +231,6 @@ int move_player(Direction dir, State *state){
         resolve_box_collision(dir, &new_state);
     } 
 
-    //not the most efficient thing in the world, but at least it's readable (it ain't) 
     if(state->wallcount != count_celltype(&new_state, CT_WALL)){ 
         free_state(&new_state);
         return 1; 
@@ -254,7 +249,9 @@ void game_end(State *state){
 
 void game_start(){
     State game_state;
-    load_level("level001", &game_state);
+    if(load_level("level001", &game_state) == 1){
+        perror("Level nem talalhato");
+    }
 
     econio_rawmode();
     econio_clrscr();
