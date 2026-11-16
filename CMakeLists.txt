@@ -12,7 +12,9 @@ add_executable(game src/main.c
     src/levels.c
     src/levels.h
     src/game.c
-    src/game.h)
+    src/game.h
+    src/events.c
+    src/events.h)
 
 set_target_properties(game PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR})
 

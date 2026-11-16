@@ -23,10 +23,10 @@ typedef enum {
 } CellType;
 
 typedef enum {
-    DIR_UP,
-    DIR_DOWN,
-    DIR_LEFT,
-    DIR_RIGHT
+    DIR_UP = 0b00,
+    DIR_DOWN = 0b11,
+    DIR_LEFT = 0b01,
+    DIR_RIGHT = 0b10
 } Direction;
 
 void game_end(State *state);

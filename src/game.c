@@ -10,6 +10,7 @@
 #include "levels.h"
 
 void game_print(State *s){
+    econio_rawmode();
     econio_gotoxy(0, 0);
     char c;
     for(int y = 0; y < s->size.y; ++y){
@@ -149,6 +150,7 @@ void game_end(State *state){
 
 void game_start(State *game_state){
     bool exit = false;
+    econio_rawmode();
     while (!exit)
     {
         game_print(game_state);
