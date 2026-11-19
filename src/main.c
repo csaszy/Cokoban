@@ -180,21 +180,35 @@ void start_menu(void){
 }
 
 void start_tui(){
-    TuiObject *root = tui_create_tuiobj(NULL);
+    TuiObject *root = tui_create_tuiobj(NULL, &(TuiObjectDimensions){
+        .horizontal_alignment = ALIGN_START,
+        .vertical_alignment = ALIGN_START,
+        .offset = i32vec2_create(0,0),
+        .size = i32vec2_create(70,20),
+    });
 
-    TuiObject *a1 = tui_create_tuiobj(root);
-    TuiObject *a2 = tui_create_tuiobj(root);
-    TuiObject *a3 = tui_create_tuiobj(root);
+    TuiObject *a1 = tui_create_tuiobj(root, &(TuiObjectDimensions){
+        .horizontal_alignment = ALIGN_CENTER,
+        .vertical_alignment = ALIGN_CENTER,
+        .offset = i32vec2_create(0,0),
+        .size = i32vec2_create(30,1)
+    });
 
-    TuiObject *b1 = tui_create_tuiobj(a1);
-    TuiObject *b2 = tui_create_tuiobj(a1);
-    TuiObject *b3 = tui_create_tuiobj(a1);
+    tui_set_content(a1, "asdfasd");
+    tui_set_content(a1, "asdklj");
 
-    tui_debug_tree(root, 0);
+    TuiObject *a2 = tui_create_tuiobj(root,NULL);
+    TuiObject *a3 = tui_create_tuiobj(root,NULL);
 
-    printf("-----\n");
+    TuiObject *b1 = tui_create_tuiobj(a1,NULL);
+    TuiObject *b2 = tui_create_tuiobj(a1,NULL);
+    TuiObject *b3 = tui_create_tuiobj(a1,NULL);
+
+    //tui_debug_tree(root, 0);
+    tui_render(root);
+
     tui_free_tuiobj(a1);
-    tui_debug_tree(root, 0);
+    //tui_debug_tree(root, 0);
     tui_free_tuiobj(root);
 }
 
