@@ -1,9 +1,12 @@
 #include <econio/econio.h>
 #include <vec2/vec2.h>
 #include <stdbool.h>
+#include <locale.h>
+
 #include "debugmalloc.h"
 
 #include "game.h"
+#include "tui.h"
 #include "darr.h"
 
 #define DIR_COUNT 4
@@ -144,7 +147,7 @@ Menu *setup(){
     return menu;
 }
 
-void start_tui(void){
+void start_menu(void){
     Menu *m = setup();
     bool exit = false;
 
@@ -176,38 +179,25 @@ void start_tui(void){
     free_menu(m);
 }
 
-void darr_print_int(Darr *arr){
-  for(int i = 0; i < darr_size(arr); ++i){
-    printf("%d", ((int*)arr->data)[i]);
-  }
-  printf("\n");
+void start_tui(){
+    TuiObject *root = tui_create_tuiobj(NULL);
+
+    TuiObject *a1 = tui_create_tuiobj(root);
+    TuiObject *a2 = tui_create_tuiobj(root);
+    TuiObject *a3 = tui_create_tuiobj(root);
+
+    tui_debug_tree(root, 0);
+
+    tui_free_tuiobj(root);
 }
 
-void darr_test(void){
-  Darr *arr = darr_create(sizeof(int)); 
-  int nums[] = {3,2,1};
 
-  darr_push(arr, nums+0);
-  darr_push(arr, nums+1);
-  darr_push(arr, nums+2);
-  darr_print_int(arr);
-
-  darr_remove(arr, 0);
-  darr_remove(arr, 0);
-  darr_remove(arr, 0);
-  darr_print_int(arr);
-
-  darr_free(arr);
-}
- 
-#include <locale.h>
-int main(int argc, char *argv[]) {
+int main(void) {
     setlocale(LC_ALL, ".UTF8");
 
-    darr_test();
-    return 0;
-
     start_tui();
+    return 0;
+    //start_menu();
     
     State game_state;
     game_init(&game_state);

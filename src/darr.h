@@ -15,5 +15,7 @@ void *darr_get(Darr *arr, int index);
 int darr_size(Darr *arr);
 Darr *darr_push(Darr *arr, void *value);
 void darr_remove(Darr *arr, unsigned int index);
+void darr_print(Darr *arr);
+int darr_index_of(Darr *arr, void *value);
 
 #endif

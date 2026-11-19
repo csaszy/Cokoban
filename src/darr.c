@@ -59,3 +59,22 @@ void darr_remove(Darr *arr, unsigned int index){
 
   arr->arr_size--;
 }
+
+int darr_index_of(Darr *arr, void *value){
+  for(int i = 0; i < arr->arr_size - 1; ++i){
+    if(memcmp(darr_get(arr, i), value, arr->member_size) == 0) return i;
+  }
+  return -1;
+}
+
+void darr_print(Darr *arr){
+  for(int i = 0; i < darr_size(arr); ++i){
+    char *element = (char *) darr_get(arr, i);
+    printf("[%p] ", element);
+    for(unsigned int j = 0; j < arr->member_size; j++){
+        printf("%02x ", element[j]);
+    }
+    printf("\n");
+  }
+  printf("\n");
+}

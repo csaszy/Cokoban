@@ -1,12 +1,22 @@
-#include "darr.h"
+#include <assert.h>
+
 #include <vec2/vec2.h>
+#include "darr.h"
 #include "debugmalloc.h"
 
+typedef enum {
+  ALIGN_START,
+  ALIGN_CENTER,
+  ALIGN_END
+} TuiAlignment;
+
 typedef struct TuiObject{
-  Darr *children;
   struct TuiObject *parent;
-  void (*on_render)(struct TuiObject*);
-  void (*on_keydown)(struct TuiObject*, int);
+  Darr *children;
+  TuiAlignment alignment;
+  i32Vec2 offset;
+  i32Vec2 size;
+  char *content; 
 } TuiObject;
 
 TuiObject *tui_create_tuiobj(TuiObject *parent){
@@ -14,24 +24,54 @@ TuiObject *tui_create_tuiobj(TuiObject *parent){
   if(tuiobj == NULL) return NULL;
 
   tuiobj->parent = parent;
-  tuiobj->children = darr_create(DARRT_TUIOBJECT);
-  tuiobj->on_render = NULL;
-  tuiobj->on_keydown = NULL;
+  tuiobj->children = darr_create(sizeof(TuiObject*));
+  tuiobj->alignment = ALIGN_START;
+  tuiobj->offset = i32vec2_create(0, 0);
+  tuiobj->size = i32vec2_create(0, 0);
+  tuiobj->content = NULL;
 
   if(parent != NULL){
-    darr_push(parent->children, tuiobj);
+    darr_push(parent->children, &tuiobj);
   }
 
   return tuiobj;
 }
 
 void tui_free_tuiobj(TuiObject *tuiobj){
-  if(tuiobj->children->size > 0) {
-    darr_free(tuiobj->children);
-    free(tuiobj); 
+  assert(tuiobj->children != NULL && "tuiobj missing children Darr");
+
+  for(int i = 0; i < darr_size(tuiobj->children); ++i){
+    TuiObject **target = (TuiObject **) darr_get(tuiobj->children, 0);
+    tui_free_tuiobj(*target);
   }
-  for(int i = 0; i < tuiobj->children->size; ++i){
-    TuiObject *removed_chiled = (TuiObject*) darr_remove(tuiobj->children, i);
-    tui_free_tuiobj(removed_chiled);
+
+  TuiObject *parent = tuiobj->parent; 
+  if(parent != NULL){
+    int index_of_pointer = darr_index_of(parent->children, &tuiobj);
+    assert(index_of_pointer >= 0 && "couldn't find pointer to this node in the parent's children array");
+    darr_remove(parent->children, index_of_pointer);
+  }
+
+  darr_free(tuiobj->children);
+  if(tuiobj->content != NULL) free(tuiobj->content);
+  free(tuiobj); 
+
+}
+
+void tui_debug_tree(TuiObject *root, int level){
+  int indentation = 2;
+  printf("% *s", level*indentation, ""); 
+  printf("[%p]\n", root);
+
+  printf("% *s", (level+1)*indentation, ""); printf("parent: \t%p\n",root->parent);
+  printf("% *s", (level+1)*indentation, ""); printf("alignment: \t%d\n",root->alignment);
+  printf("% *s", (level+1)*indentation, ""); printf("offset: \tx:%d, y:%d\n",root->offset.x, root->offset.y);
+  printf("% *s", (level+1)*indentation, ""); printf("size: \tx:%d, y:%d\n",root->size.x, root->size.y);
+  printf("% *s", (level+1)*indentation, ""); printf("content: \t%s\n",root->content); 
+  printf("% *s", (level+1)*indentation, ""); printf("children_arr: \t%p\n",root->children);
+
+  for(int i = 0; i < darr_size(root->children); ++i){
+    TuiObject **target = (TuiObject **) darr_get(root->children, i);
+    tui_debug_tree(*target, level+1);
   }
 }
