@@ -61,7 +61,7 @@ void darr_remove(Darr *arr, unsigned int index){
 }
 
 int darr_index_of(Darr *arr, void *value){
-  for(int i = 0; i < arr->arr_size - 1; ++i){
+  for(int i = 0; i < arr->arr_size; ++i){  //off by one, not sure wyh
     if(memcmp(darr_get(arr, i), value, arr->member_size) == 0) return i;
   }
   return -1;

@@ -186,8 +186,15 @@ void start_tui(){
     TuiObject *a2 = tui_create_tuiobj(root);
     TuiObject *a3 = tui_create_tuiobj(root);
 
+    TuiObject *b1 = tui_create_tuiobj(a1);
+    TuiObject *b2 = tui_create_tuiobj(a1);
+    TuiObject *b3 = tui_create_tuiobj(a1);
+
     tui_debug_tree(root, 0);
 
+    printf("-----\n");
+    tui_free_tuiobj(a1);
+    tui_debug_tree(root, 0);
     tui_free_tuiobj(root);
 }
 

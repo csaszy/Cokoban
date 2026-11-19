@@ -40,7 +40,7 @@ TuiObject *tui_create_tuiobj(TuiObject *parent){
 void tui_free_tuiobj(TuiObject *tuiobj){
   assert(tuiobj->children != NULL && "tuiobj missing children Darr");
 
-  for(int i = 0; i < darr_size(tuiobj->children); ++i){
+  while(darr_size(tuiobj->children) > 0){
     TuiObject **target = (TuiObject **) darr_get(tuiobj->children, 0);
     tui_free_tuiobj(*target);
   }
@@ -59,16 +59,16 @@ void tui_free_tuiobj(TuiObject *tuiobj){
 }
 
 void tui_debug_tree(TuiObject *root, int level){
-  int indentation = 2;
+  int indentation = 4;
   printf("% *s", level*indentation, ""); 
   printf("[%p]\n", root);
 
-  printf("% *s", (level+1)*indentation, ""); printf("parent: \t%p\n",root->parent);
-  printf("% *s", (level+1)*indentation, ""); printf("alignment: \t%d\n",root->alignment);
-  printf("% *s", (level+1)*indentation, ""); printf("offset: \tx:%d, y:%d\n",root->offset.x, root->offset.y);
-  printf("% *s", (level+1)*indentation, ""); printf("size: \tx:%d, y:%d\n",root->size.x, root->size.y);
-  printf("% *s", (level+1)*indentation, ""); printf("content: \t%s\n",root->content); 
-  printf("% *s", (level+1)*indentation, ""); printf("children_arr: \t%p\n",root->children);
+  printf("% *s|", (level+1)*indentation, ""); printf("parent:\t\t%p\n",root->parent);
+  printf("% *s|", (level+1)*indentation, ""); printf("alignment:\t\t%d\n",root->alignment);
+  printf("% *s|", (level+1)*indentation, ""); printf("offset:\t\tx:%d, y:%d\n",root->offset.x, root->offset.y);
+  printf("% *s|", (level+1)*indentation, ""); printf("size:\t\tx:%d, y:%d\n",root->size.x, root->size.y);
+  printf("% *s|", (level+1)*indentation, ""); printf("content:\t\t%s\n",root->content); 
+  printf("% *s|", (level+1)*indentation, ""); printf("child_arr:\t\t%p\n",root->children);
 
   for(int i = 0; i < darr_size(root->children); ++i){
     TuiObject **target = (TuiObject **) darr_get(root->children, i);
