@@ -12,7 +12,6 @@
 void game_print(State *s){
     econio_rawmode();
     econio_gotoxy(0, 0);
-    char c;
     for(int y = 0; y < s->size.y; ++y){
         for(int x = 0; x < s->size.x; ++x){
             printf(" %c", s->map[y][x]);
@@ -21,7 +20,7 @@ void game_print(State *s){
     }
 }
 
-int virtual_move_player(Direction dir, State *dst){
+void virtual_move_player(Direction dir, State *dst){
     #undef DST_PLAYER_CELL
     #define DST_PLAYER_CELL dst->map[(int)dst->player.y][(int)dst->player.x]
     switch (dir){

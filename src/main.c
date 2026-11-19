@@ -177,19 +177,24 @@ void start_tui(void){
 }
 
 void darr_print_int(Darr *arr){
-  for(int i = 0; i < arr->size; ++i){
+  for(int i = 0; i < darr_size(arr); ++i){
     printf("%d", ((int*)arr->data)[i]);
   }
   printf("\n");
 }
 
 void darr_test(void){
-  Darr *arr = darr_create(DARRT_INT); 
+  Darr *arr = darr_create(sizeof(int)); 
   int nums[] = {3,2,1};
+
   darr_push(arr, nums+0);
   darr_push(arr, nums+1);
   darr_push(arr, nums+2);
+  darr_print_int(arr);
 
+  darr_remove(arr, 0);
+  darr_remove(arr, 0);
+  darr_remove(arr, 0);
   darr_print_int(arr);
 
   darr_free(arr);
