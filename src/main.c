@@ -2,6 +2,7 @@
 #include <vec2/vec2.h>
 #include <stdbool.h>
 #include <locale.h>
+#include <windows.h>
 
 #include "debugmalloc.h"
 
@@ -184,25 +185,39 @@ void start_tui(){
         .horizontal_alignment = ALIGN_START,
         .vertical_alignment = ALIGN_START,
         .offset = i32vec2_create(0,0),
-        .size = i32vec2_create(70,20),
-    });
+        .size = i32vec2_create(80,30),
+    }, 
+    NULL);
 
     TuiObject *a1 = tui_create_tuiobj(root, &(TuiObjectDimensions){
-        .horizontal_alignment = ALIGN_CENTER,
         .vertical_alignment = ALIGN_CENTER,
+        .horizontal_alignment = ALIGN_CENTER,
+        .offset = i32vec2_create(10,0),
+        .size = i32vec2_create(50,10)
+    },
+    tui_renderaction_setbgtowhite);
+
+    TuiObject *a2 = tui_create_tuiobj(root,NULL,NULL);
+    TuiObject *a3 = tui_create_tuiobj(root,NULL,NULL);
+
+    TuiObject *b1 = tui_create_tuiobj(a1, &(TuiObjectDimensions){
+        .vertical_alignment = ALIGN_END,
+        .horizontal_alignment = ALIGN_END,
         .offset = i32vec2_create(0,0),
-        .size = i32vec2_create(30,1)
-    });
+        .size = i32vec2_create(5,5)
+    },
+    tui_renderaction_DEFAULT_SETTINGS);
+    TuiObject *b2 = tui_create_tuiobj(a1, &(TuiObjectDimensions){
+        .vertical_alignment = ALIGN_END,
+        .horizontal_alignment = ALIGN_CENTER,
+        .offset = i32vec2_create(0,0),
+        .size = i32vec2_create(5,6)
+    },
+    tui_renderaction_DEFAULT_SETTINGS);
+    TuiObject *b3 = tui_create_tuiobj(a1,NULL,NULL);
 
     tui_set_content(a1, "asdfasd");
     tui_set_content(a1, "asdklj");
-
-    TuiObject *a2 = tui_create_tuiobj(root,NULL);
-    TuiObject *a3 = tui_create_tuiobj(root,NULL);
-
-    TuiObject *b1 = tui_create_tuiobj(a1,NULL);
-    TuiObject *b2 = tui_create_tuiobj(a1,NULL);
-    TuiObject *b3 = tui_create_tuiobj(a1,NULL);
 
     //tui_debug_tree(root, 0);
     tui_render(root);
