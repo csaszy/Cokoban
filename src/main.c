@@ -1,9 +1,10 @@
-#include "game.h"
 #include <econio/econio.h>
 #include <vec2/vec2.h>
 #include <stdbool.h>
-#include <memory.h>
 #include "debugmalloc.h"
+
+#include "game.h"
+#include "darr.h"
 
 #define DIR_COUNT 4
 typedef struct MenuItem{
@@ -174,8 +175,33 @@ void start_tui(void){
     }
     free_menu(m);
 }
+
+void darr_print_int(Darr *arr){
+  for(int i = 0; i < arr->size; ++i){
+    printf("%d", ((int*)arr->data)[i]);
+  }
+  printf("\n");
+}
+
+void darr_test(void){
+  Darr *arr = darr_create(DARRT_INT); 
+  int nums[] = {3,2,1};
+  darr_push(arr, nums+0);
+  darr_push(arr, nums+1);
+  darr_push(arr, nums+2);
+
+  darr_print_int(arr);
+
+  darr_free(arr);
+}
  
+#include <locale.h>
 int main(int argc, char *argv[]) {
+    setlocale(LC_ALL, ".UTF8");
+
+    darr_test();
+    return 0;
+
     start_tui();
     
     State game_state;

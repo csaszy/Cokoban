@@ -14,7 +14,11 @@ add_executable(game src/main.c
     src/game.c
     src/game.h
     src/events.c
-    src/events.h)
+    src/events.h
+    src/darr.c
+    src/darr.h
+    src/tui.h
+    )
 
 set_target_properties(game PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR})
 
