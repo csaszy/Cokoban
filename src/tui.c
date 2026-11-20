@@ -71,18 +71,23 @@ void tui_free_tuiobj(TuiObject *tuiobj){
 
 }
 
-void tui_debug_tree(TuiObject *root, int level){
+void tui_debug_tree_print_sep(int level){
   int indentation = 4;
-  printf("%*s", level*indentation, ""); 
-  printf("[%p]\n", root);
+  for(int i = 0; i < level; ++i){
+    printf("|%*s", indentation, ""); 
+  }
+}
+void tui_debug_tree(TuiObject *root, int level){
+  tui_debug_tree_print_sep(level);
+  printf("+[%p]\n", root);
 
-  printf("%*s|", (level+1)*indentation, ""); printf("parent:\t\t%p\n",root->parent);
-  printf("%*s|", (level+1)*indentation, ""); printf("h_alignment:\t\t%d\n",root->horizontal_alignment);
-  printf("%*s|", (level+1)*indentation, ""); printf("v_alignment:\t\t%d\n",root->vertical_alignment);
-  printf("%*s|", (level+1)*indentation, ""); printf("offset:\t\tx:%d, y:%d\n",root->offset.x, root->offset.y);
-  printf("%*s|", (level+1)*indentation, ""); printf("size:\t\tx:%d, y:%d\n",root->size.x, root->size.y);
-  printf("%*s|", (level+1)*indentation, ""); printf("content:\t\t%s\n",root->content); 
-  printf("%*s|", (level+1)*indentation, ""); printf("child_arr:\t\t%p\n",root->children);
+  tui_debug_tree_print_sep(level+1); printf("parent:\t\t%p\n",root->parent);
+  tui_debug_tree_print_sep(level+1); printf("h_alignment:\t\t%d\n",root->horizontal_alignment);
+  tui_debug_tree_print_sep(level+1); printf("v_alignment:\t\t%d\n",root->vertical_alignment);
+  tui_debug_tree_print_sep(level+1); printf("offset:\t\tx:%d, y:%d\n",root->offset.x, root->offset.y);
+  tui_debug_tree_print_sep(level+1); printf("size:\t\tx:%d, y:%d\n",root->size.x, root->size.y);
+  tui_debug_tree_print_sep(level+1); printf("content:\t\t%s\n",root->content); 
+  tui_debug_tree_print_sep(level+1); printf("child_arr:\t\t%p\n",root->children);
 
   for(int i = 0; i < darr_size(root->children); ++i){
     TuiObject **target = (TuiObject **) darr_get(root->children, i);
