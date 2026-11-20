@@ -19,6 +19,8 @@ add_executable(game src/main.c
     src/darr.c
     src/darr.h
     src/tui.h
+    src/tui.c
+    src/window1.h
     )
 
 set_target_properties(game PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR})
