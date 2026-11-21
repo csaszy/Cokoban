@@ -42,21 +42,26 @@ typedef struct TuiObject{
   i32Vec2 offset;
   i32Vec2 size;
   i32Vec2 _global_offset;
-  Screen *p_screen;
-  void (*render)(struct TuiObject*); //self pointer 
+  void (*render)(struct TuiObject*, Screen *); //self pointer 
   int state_size;
   void *state;
 } TuiObject;
 
 void tui_renderaction_DEFAULT_SETTINGS();
 void tui_renderaction_setbgtowhite();
-TuiObject *tui_create_tuiobj(TuiObject *parent, const TuiObjectDimensions *dimensions, void (*render)(void));
+
+TuiObject *tui_create_tuiobj(TuiObject *parent, const TuiObjectDimensions *dimensions);
+void tui_tuiobj_set_render(TuiObject *obj, void (*render)(TuiObject *, Screen *));
+void *tui_tuiobj_add_state(TuiObject *obj, int state_size);
 void tui_attach_tuiobj(TuiObject *parent, TuiObject *obj);
-void tui_set_content(TuiObject *obj, char *str);
 void tui_free_tuiobj(TuiObject *tuiobj);
+void tui_putc(TuiObject *obj, Cell cell, i32Vec2 pos, Screen *p_screen);
+void tui_draw_diff(Screen *p_screen);
+void tui_render_accumulate(TuiObject *parent, i32Vec2 global_offset, Screen *p_screen);
+void tui_render(TuiObject *root, Screen *p_screen);
+Screen *tui_create_screen(i32Vec2 size);
+void tui_free_screen(Screen *screen);
+void tui_debug_tree_print_sep(int level);
 void tui_debug_tree(TuiObject *root, int level);
-void tui_draw_content(TuiObject *obj, i32Vec2 pos);
-void tui_render_accumulate(TuiObject *parent, i32Vec2 global_offset);
-void tui_render(TuiObject *root);
 
 #endif

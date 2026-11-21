@@ -10,70 +10,23 @@
 #include "tui.h"
 #include "window_start.h"
 
-
-void start_tui(){
-    TuiObject *root = tui_create_tuiobj(NULL, &(TuiObjectDimensions){
-        .horizontal_alignment = ALIGN_START,
-        .vertical_alignment = ALIGN_START,
-        .offset = i32vec2_create(0,0),
-        .size = i32vec2_create(80,30),
-    }, 
-    NULL);
-
-    TuiObject *a1 = tui_create_tuiobj(root, &(TuiObjectDimensions){
-        .vertical_alignment = ALIGN_CENTER,
-        .horizontal_alignment = ALIGN_CENTER,
-        .offset = i32vec2_create(10,0),
-        .size = i32vec2_create(50,10)
-    },
-    tui_renderaction_setbgtowhite);
-
-    TuiObject *a2 = tui_create_tuiobj(root,NULL,NULL);
-    TuiObject *a3 = tui_create_tuiobj(root,NULL,NULL);
-
-    TuiObject *b1 = tui_create_tuiobj(a1, &(TuiObjectDimensions){
-        .vertical_alignment = ALIGN_END,
-        .horizontal_alignment = ALIGN_END,
-        .offset = i32vec2_create(0,0),
-        .size = i32vec2_create(5,5)
-    },
-    tui_renderaction_DEFAULT_SETTINGS);
-    TuiObject *b2 = tui_create_tuiobj(a1, &(TuiObjectDimensions){
-        .vertical_alignment = ALIGN_END,
-        .horizontal_alignment = ALIGN_CENTER,
-        .offset = i32vec2_create(0,0),
-        .size = i32vec2_create(5,6)
-    },
-    tui_renderaction_DEFAULT_SETTINGS);
-    TuiObject *b3 = tui_create_tuiobj(a1,NULL,NULL);
-
-    tui_set_content(a1, "asdfasd");
-    tui_set_content(a1, "asdklj");
-
-    //tui_debug_tree(root, 0);
-    tui_render(root);
-
-    tui_free_tuiobj(a1);
-    //tui_debug_tree(root, 0);
-    tui_free_tuiobj(root);
-}
-
 void main_game_loop(){
     bool exit = false;
 
+    Screen *screen = tui_create_screen(i32vec2_create(80,30));
+
     TuiObject *root = tui_create_tuiobj(NULL, &(TuiObjectDimensions){
         .horizontal_alignment = ALIGN_START,
         .vertical_alignment = ALIGN_START,
         .offset = i32vec2_create(0,0),
-        .size = i32vec2_create(80,30),
-    }, 
-    NULL);
+        .size = i32vec2_create(screen->size.x, screen->size.y),
+    });
 
     w_start_init(root);
 
     while (!exit)
     {
-        tui_render(root);
+        tui_render(root, screen);
         econio_rawmode();
         switch(econio_getch()){
             case KEY_UP:
@@ -91,7 +44,9 @@ void main_game_loop(){
             break;
         }
     }
+
     tui_free_tuiobj(root);
+    tui_free_screen(screen);
 }
 
 
