@@ -9,6 +9,12 @@
 #include "darr.h"
 #include "debugmalloc.h"
 
+#define DEFAULT_CELL (Cell) {       \
+  .background_color = COL_BLACK,    \
+  .foreground_color = COL_WHITE,    \
+  .c = ' '                          \
+}                      
+
 typedef enum {
   ALIGN_START,
   ALIGN_CENTER,
@@ -47,8 +53,7 @@ typedef struct TuiObject{
   void *state;
 } TuiObject;
 
-void tui_renderaction_DEFAULT_SETTINGS();
-void tui_renderaction_setbgtowhite();
+void tui_SET_ALL(TuiObject *obj, Screen *s, Cell c);
 
 TuiObject *tui_create_tuiobj(TuiObject *parent, const TuiObjectDimensions *dimensions);
 void tui_tuiobj_set_render(TuiObject *obj, void (*render)(TuiObject *, Screen *));

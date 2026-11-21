@@ -1,19 +1,11 @@
 #include "tui.h"
 
-#define DEFAULT_CELL (Cell) {             \
-    .background_color = COL_BLACK,  \
-    .foreground_color = COL_WHITE,  \
-    .c = ' '                        \
-  };                            
-
-void tui_renderaction_DEFAULT_SETTINGS(){
-  econio_textbackground(COL_BLACK);
-  econio_textcolor(COL_WHITE);
-}
-
-void tui_renderaction_setbgtowhite(){
-  econio_textbackground(COL_WHITE);
-  econio_textcolor(COL_BLACK);
+void tui_SET_ALL(TuiObject *obj, Screen *s, Cell c){
+  for(int x = 0; x < obj->size.x; x++){
+    for(int y = 0; y < obj->size.y; y++){
+      tui_putc(obj, c, i32vec2_create(x,y), s);
+    }
+  }
 }
 
 TuiObject *tui_create_tuiobj(TuiObject *parent, const TuiObjectDimensions *dimensions){

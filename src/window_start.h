@@ -11,6 +11,15 @@
 #define W1_HINT_OFFSET (i32Vec2){ .x = 0, .y = 2}
 #define W1_HINT_SIZE (i32Vec2){ .x = 15, .y = 1}
 
+static const char *TITLE[] = {
+" _____ _____ _   _____________  ___   _   _ ",
+"/  __ \\  _  | | / /  _  | ___ \\/ _ \\ | \\ | |",
+"| /  \\/ | | | |/ /| | | | |_/ / /_\\ \\|  \\| |",
+"| |   | | | |    \\| | | | ___ \\  _  || . ` |",
+"| \\__/\\ \\_/ / |\\  \\ \\_/ / |_/ / | | || |\\  |",
+" \\____/\\___/\\_| \\_/\\___/\\____/\\_| |_/\\_| \\_/",
+};
+
 void root_render(TuiObject *self, Screen *s){
   for(int x = 0; x < self->size.x; x++){
     for(int y = 0; y < self->size.y; y++){
@@ -19,6 +28,17 @@ void root_render(TuiObject *self, Screen *s){
         .background_color = COL_DARKGRAY,
         .foreground_color = COL_BLACK
       }, i32vec2_create(x, y), s);
+    }
+  }
+}
+
+void title_render(TuiObject *self, Screen *s){
+  int width = strlen(TITLE[0]);
+  int height = 6;
+  for(int x = 0; x < width; x++){
+    for(int y = 0; y < height; y++){
+      Cell c = (Cell){ .c = TITLE[y][x], .background_color = COL_WHITE, .foreground_color= COL_BLACK};
+      tui_putc(self, c, i32vec2_create(x,y), s);
     }
   }
 }
@@ -49,8 +69,9 @@ void w_start_init(TuiObject *root){
     .horizontal_alignment = ALIGN_CENTER,
     .vertical_alignment = ALIGN_START,
     .offset = i32vec2_create(0, 3),
-    .size = i32vec2_create(40, 10)
+    .size = i32vec2_create(46, 6)
   });
+  tui_tuiobj_set_render(title, title_render);
 
   TuiObject *name_field = tui_create_tuiobj(window_root, &(TuiObjectDimensions){
     .horizontal_alignment = ALIGN_CENTER,
