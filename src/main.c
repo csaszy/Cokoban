@@ -8,7 +8,7 @@
 
 #include "game.h"
 #include "tui.h"
-#include "window1.h"
+#include "window_start.h"
 
 
 void start_tui(){
@@ -69,8 +69,7 @@ void main_game_loop(){
     }, 
     NULL);
 
-    window_init(root);
-
+    w_start_init(root);
 
     while (!exit)
     {

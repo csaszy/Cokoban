@@ -10,7 +10,8 @@ void tui_renderaction_setbgtowhite(){
   econio_textcolor(COL_BLACK);
 }
 
-TuiObject *tui_create_tuiobj(TuiObject *parent, const TuiObjectDimensions *dimensions, void (*render)(void)){
+
+TuiObject *tui_create_tuiobj(TuiObject *parent, const TuiObjectDimensions *dimensions, Screen *p_screen){
   TuiObjectDimensions defaults = {
     .horizontal_alignment = ALIGN_START,
     .vertical_alignment = ALIGN_START,
@@ -28,26 +29,46 @@ TuiObject *tui_create_tuiobj(TuiObject *parent, const TuiObjectDimensions *dimen
   tuiobj->vertical_alignment = dimensions->vertical_alignment;
   tuiobj->offset = dimensions->offset;
   tuiobj->size = dimensions->size;
-  tuiobj->content = NULL;
-  tuiobj->render = render;
-  tuiobj->on_key_down = NULL;
-  tuiobj->has_changed = true;
+  tuiobj->state = NULL;
+  tuiobj->state_size = 0;
+  tuiobj->render = NULL;
+  if(tuiobj->parent == NULL) tuiobj->p_screen = p_screen;
 
-  if(parent != NULL){
-    darr_push(parent->children, &tuiobj);
-  }
+  tui_attach_tuiobj(parent, tuiobj);
 
   return tuiobj;
 }
 
-void tui_set_content(TuiObject *obj, char *str){
-  if(obj->content != NULL) free(obj->content);
 
-  int len = strlen(str) + 1;
-  obj->content = malloc(len);
-  if(obj->content == NULL) assert(0 && "malloc failed");
 
-  memcpy(obj->content, str, len);
+void tui_tuiobj_set_render(TuiObject *obj, void (*render)(TuiObject *, i32Vec2)){
+  obj->render = render;
+}
+
+void *tui_tuiobj_add_state(TuiObject *obj, int state_size){
+  void * p_state = malloc(state_size);
+  if(p_state == NULL) assert(0 && "malloc failed");
+
+  obj->state = p_state;
+  obj->state_size = state_size;
+}
+
+void tui_set_screen_on_all_nodes(TuiObject *obj){
+  assert(obj->p_screen != NULL && "parent TuiObject did not have a screen");
+  obj->p_screen = obj->parent->p_screen;
+
+  for(int i = 0; i < darr_size(obj->children); ++i){
+    TuiObject **child = (TuiObject **) darr_get(obj->children, i);
+    tui_set_screen_on_all_nodes(*child);
+  }
+}
+
+void tui_attach_tuiobj(TuiObject *parent, TuiObject *obj){
+  if(parent != NULL){
+    darr_push(parent->children, &obj);
+
+    tui_set_screen_on_all_children(obj);
+  }
 }
 
 void tui_free_tuiobj(TuiObject *tuiobj){
@@ -66,11 +87,62 @@ void tui_free_tuiobj(TuiObject *tuiobj){
   }
 
   darr_free(tuiobj->children);
-  if(tuiobj->content != NULL) free(tuiobj->content);
+  if(tuiobj->state != NULL) free(tuiobj->state);
+
   free(tuiobj); 
+}
+
+
+tui_putc(TuiObject *obj, Cell cell){
 
 }
 
+void tui_render_accumulate(TuiObject *parent, i32Vec2 global_offset){
+  parent->_global_offset = global_offset;
+  parent->render(parent);
+
+  for(int i = 0; i < darr_size(parent->children); ++i){
+    TuiObject **child = (TuiObject **) darr_get(parent->children, i);
+    i32Vec2 updated_global_offset = global_offset; 
+
+    //global_offset X
+    switch((*child)->horizontal_alignment){
+      case(ALIGN_START):
+        updated_global_offset.x = global_offset.x + (*child)->offset.x;
+        break;
+      case(ALIGN_END):
+        updated_global_offset.x = global_offset.x + parent->size.x - (*child)->size.x + (*child)->offset.x;
+        break;
+      case(ALIGN_CENTER):
+        updated_global_offset.x = global_offset.x + (int)(parent->size.x / 2) - (int)((*child)->size.x / 2) + (*child)->offset.x; 
+        break;
+    }
+
+    //global_offset Y
+    switch((*child)->vertical_alignment){
+      case(ALIGN_START):
+        updated_global_offset.y = global_offset.y + (*child)->offset.y;
+        break;
+      case(ALIGN_END):
+        updated_global_offset.y = global_offset.y + parent->size.y - (*child)->size.y + (*child)->offset.y;
+        break;
+      case(ALIGN_CENTER):
+        updated_global_offset.y = global_offset.y + (int)(parent->size.y / 2) - (int)((*child)->size.y / 2) + (*child)->offset.y; 
+        break;
+    }
+
+    tui_render_accumulate(*child, updated_global_offset);
+  }
+}
+
+void tui_render(TuiObject *root){
+  econio_clrscr(); 
+  tui_renderaction_DEFAULT_SETTINGS();
+  tui_render_accumulate(root, (i32Vec2){.x = 0, .y = 0});
+  econio_gotoxy(root->size.x,root->size.y);
+}
+
+//debug stuff
 void tui_debug_tree_print_sep(int level){
   int indentation = 4;
   for(int i = 0; i < level; ++i){
@@ -93,72 +165,4 @@ void tui_debug_tree(TuiObject *root, int level){
     TuiObject **target = (TuiObject **) darr_get(root->children, i);
     tui_debug_tree(*target, level+1);
   }
-}
-
-void tui_draw_content(TuiObject *obj, i32Vec2 pos){
-  econio_rawmode();
-  econio_gotoxy(pos.x, pos.y);
-
-  int char_index = 0;
-  for(int i = pos.y; i < pos.y + obj->size.y; ++i){
-    for(int j = pos.x; j < pos.x + obj->size.x; ++j){
-      econio_gotoxy(j,i);
-      if(obj->content == NULL) 
-        printf(" ");
-      else
-        printf("%c", obj->content[char_index] == '\0' ? ' ' : obj->content[char_index++]);
-    }
-  }
-
-  econio_normalmode();
-}
-
-void tui_render_accumulate(TuiObject *parent, i32Vec2 global_offset){
-  tui_renderaction_DEFAULT_SETTINGS();
-
-  if(parent->has_changed){
-    if(parent->render != NULL) parent->render();
-    tui_draw_content(parent, global_offset);
-    parent->has_changed = false;
-  }
-
-  for(int i = 0; i < darr_size(parent->children); ++i){
-    TuiObject **child = (TuiObject **) darr_get(parent->children, i);
-    i32Vec2 updated_global_offset = global_offset; 
-
-    //global_offset X
-    switch((*child)->horizontal_alignment){
-      case(ALIGN_START):
-        updated_global_offset.x = global_offset.x + (*child)->offset.x;
-        break;
-      case(ALIGN_END):
-        updated_global_offset.x = global_offset.x + parent->size.x - (*child)->size.x + (*child)->offset.x;
-        break;
-      case(ALIGN_CENTER):
-        updated_global_offset.x = global_offset.x + (int)(parent->size.x / 2) + 1 - (int)((*child)->size.x / 2) + (*child)->offset.x; 
-        break;
-    }
-
-    //global_offset Y
-    switch((*child)->vertical_alignment){
-      case(ALIGN_START):
-        updated_global_offset.y = global_offset.y + (*child)->offset.y;
-        break;
-      case(ALIGN_END):
-        updated_global_offset.y = global_offset.y + parent->size.y - (*child)->size.y + (*child)->offset.y;
-        break;
-      case(ALIGN_CENTER):
-        updated_global_offset.y = global_offset.y + (int)(parent->size.y / 2) + 1 - (int)((*child)->size.y / 2) + (*child)->offset.y; 
-        break;
-    }
-
-    tui_render_accumulate(*child, updated_global_offset);
-  }
-}
-
-void tui_render(TuiObject *root){
-  econio_clrscr(); 
-  tui_renderaction_DEFAULT_SETTINGS();
-  tui_render_accumulate(root, (i32Vec2){.x = 0, .y = 0});
-  econio_gotoxy(root->size.x,root->size.y);
 }
