@@ -181,7 +181,7 @@ void tui_render(TuiObject *root, Screen *p_screen){
   tui_render_accumulate(root, (i32Vec2){.x = 0, .y = 0}, p_screen);
   tui_draw_diff(p_screen);
 
-  econio_gotoxy(root->size.x,root->size.y);
+  econio_gotoxy(p_screen->size.x, p_screen->size.y);
 }
 
 Screen *tui_create_screen(i32Vec2 size){

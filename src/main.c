@@ -55,11 +55,4 @@ int main(void) {
     main_game_loop();
 
     return 0;
-    //start_menu();
-    
-    State game_state;
-    game_init(&game_state);
-    game_start(&game_state);
-    game_end(&game_state);
-    return 0;
 }

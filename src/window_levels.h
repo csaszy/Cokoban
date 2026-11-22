@@ -100,7 +100,7 @@ void w_levels_init(TuiObject *root){
     .horizontal_alignment = ALIGN_START,
     .vertical_alignment = ALIGN_START,
     .offset = i32vec2_create(2, LEVEL_LIST_PADDING),
-    .size = i32vec2_create(8, window_root->size.y - LEVEL_LIST_PADDING * 2) 
+    .size = i32vec2_create(10, window_root->size.y - LEVEL_LIST_PADDING * 2) 
   });
 
   //level_select_button entries
@@ -121,7 +121,8 @@ void w_levels_init(TuiObject *root){
     });
     Levels_ButtonState *bs = tui_tuiobj_add_state(btn, sizeof(Levels_ButtonState));
     bs->window_state = window_root_state;
-    strncpy(bs->text, line, MAX_LEVEL_NAME_LENGTH - 1);
+    strncpy(bs->text, line, strcspn(line, "."));
+    btn->size = i32vec2_create(strlen(bs->text), 1);
     tui_tuiobj_set_render_action(btn, levels_button_render_action);
     row++;
   }

@@ -10,8 +10,6 @@ add_subdirectory(libs/econio)
 
 add_executable(game src/main.c
     src/debugmalloc.h
-    src/levels.c
-    src/levels.h
     src/game.c
     src/game.h
     src/events.c
@@ -22,6 +20,7 @@ add_executable(game src/main.c
     src/tui.c
     src/window_start.h
     src/window_levels.h
+    src/window_game.h
     src/constants.h
     )
 
