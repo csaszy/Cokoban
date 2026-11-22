@@ -26,23 +26,20 @@ void main_game_loop(){
     w_levels_init(root);
     //w_start_init(root);
 
+    econio_rawmode();
+    EconioKey key;
     while (!exit)
     {
         tui_render(root, screen);
-        econio_rawmode();
-        switch(econio_getch()){
-            case KEY_UP:
-                break;
-            case KEY_DOWN:
-                break;
-            case KEY_LEFT:
-                break;
-            case KEY_RIGHT:
-                break;
-            case KEY_ENTER:
-                break;
+        switch(key = econio_getch()){
             case KEY_ESCAPE:
                 exit = true;
+            break;
+            default:
+                tui_dispatch_event(root, (TUI_Event){
+                    .keypress.type = EVENT_KEYPRESS,
+                    .keypress.key = key 
+                });
             break;
         }
     }

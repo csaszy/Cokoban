@@ -2,12 +2,13 @@
 #define TUI_H
 
 #include <assert.h>
+#include <string.h>
 
 #include <econio/econio.h>
 #include <vec2/vec2.h>
-#include <string.h>
 #include "darr.h"
 #include "events.h"
+
 #include "debugmalloc.h"
 
 #define DEFAULT_CELL (Cell) {       \
@@ -50,7 +51,7 @@ typedef struct TuiObject{
   i32Vec2 size;
   i32Vec2 _global_offset;
   void (*render_action)(struct TuiObject*, Screen *); //self pointer 
-  void (*on_event)(struct TuiObject*, TUI_Event event);
+  void (*on_event)(struct TuiObject*, TUI_Event);
   int state_size;
   void *state;
 } TuiObject;
@@ -68,6 +69,13 @@ void tui_render_accumulate(TuiObject *parent, i32Vec2 global_offset, Screen *p_s
 void tui_render(TuiObject *root, Screen *p_screen);
 Screen *tui_create_screen(i32Vec2 size);
 void tui_free_screen(Screen *screen);
+
+void tui_dispatch_event(TuiObject *root, TUI_Event event);
+void tui_events_dispatch(TuiObject *root);
+void tui_event_system_init();
+void tui_event_system_free();
+void tui_events_subscribe(TuiObject *obj, void (*callback)(TuiObject*, TUI_Event));
+
 void tui_debug_tree_print_sep(int level);
 void tui_debug_tree(TuiObject *root, int level);
 

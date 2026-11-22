@@ -22,6 +22,7 @@ add_executable(game src/main.c
     src/tui.c
     src/window_start.h
     src/window_levels.h
+    src/constants.h
     )
 
 set_target_properties(game PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR})

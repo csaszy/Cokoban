@@ -1,17 +1,18 @@
 #ifndef EVENTS_H
 #define EVENTS_H
 
-#include "darr.h"
-#include "tui.h"
+#include <econio/econio.h>
+#include "constants.h"
 
-typedef enum{
+typedef enum TUI_EVENT_TYPE{
     EVENT_KEYPRESS,
     EVENT_GOTOLEVELSELECET,
+    EVENT_LEVELSELECTED,
 } TUI_EVENT_TYPE;
 
 typedef struct {
     TUI_EVENT_TYPE type;
-    char code;
+    EconioKey key;
 } TUI_KeypressEvent; 
 
 typedef struct {
@@ -19,14 +20,15 @@ typedef struct {
     void *data;
 } TUI_GoToLevelSelectEvent; 
 
+typedef struct {
+    TUI_EVENT_TYPE type;
+    char level_name[MAX_LEVEL_NAME_LENGTH];
+} TUI_LevelSelectedEvent; 
+
 typedef union {
     TUI_EVENT_TYPE type; 
     TUI_KeypressEvent keypress;
     TUI_GoToLevelSelectEvent level_select;
 } TUI_Event;
-
-void tui_event_queue_add(TUI_Event event);
-void tui_event_queue_pop();
-void tui_dispatch_events();
 
 #endif

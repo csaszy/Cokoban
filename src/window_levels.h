@@ -2,7 +2,8 @@
 #include <vec2/vec2.h>
 #include <string.h>
 
-#define MAX_LEVEL_NAME_LENGTH 20
+#include "constants.h"
+
 #define LEVEL_LIST_PADDING 3
 #define FIRST_HINT_STR "Valassz a palyak kozul:"
 
@@ -31,7 +32,7 @@ void levels_root_render_action(TuiObject *self, Screen *s){
 void levels_button_render_action(TuiObject *self, Screen *s){
   Levels_ButtonState *self_state = (Levels_ButtonState *)(self->state);
   const char *str = self_state->text;
-  bool is_selected = is_selected = self == self_state->window_state->selected_child;
+  bool is_selected = (self == self_state->window_state->selected_child);
   int c = 0;
   for(int i = 0; i < self->size.x; ++i){
     tui_putc(self, (Cell) {
@@ -56,6 +57,24 @@ void levels_hint_render(TuiObject *self, Screen *s){
   }
 }
 
+void window_root_on_event(TuiObject *self, TUI_Event event){
+  Levels_RootState *window_state = (Levels_RootState *)self->state;
+  Levels_ButtonState *curr_sel_button_state = ((Levels_ButtonState *)((TuiObject *)window_state->selected_child)->state);
+  if(event.type == EVENT_KEYPRESS){
+    switch(event.keypress.key){
+      case(KEY_DOWN):
+        if(curr_sel_button_state->dir_down != NULL)
+          window_state->selected_child = curr_sel_button_state->dir_down;
+      break;  
+      case(KEY_UP):
+        if(curr_sel_button_state->dir_up != NULL)
+          window_state->selected_child = curr_sel_button_state->dir_up;
+      break;
+      default: break;
+    }
+  }
+}
+
 void w_levels_init(TuiObject *root){
   TuiObject *window_root = tui_create_tuiobj(root, &(TuiObjectDimensions){
     .horizontal_alignment = ALIGN_START,
@@ -65,6 +84,7 @@ void w_levels_init(TuiObject *root){
   });
   tui_tuiobj_set_render_action(window_root, levels_root_render_action);
   Levels_RootState *window_root_state = tui_tuiobj_add_state(window_root, sizeof(Levels_RootState));
+  tui_events_subscribe(window_root, window_root_on_event);
 
   //hint
   TuiObject *hint = tui_create_tuiobj(window_root, &(TuiObjectDimensions){
@@ -122,6 +142,22 @@ void w_levels_init(TuiObject *root){
   TuiObject *first_level = *((TuiObject **) darr_get(level_list->children, 0));
   if(first_level == NULL) return;
   ((Levels_RootState *)(window_root->state))->selected_child = first_level;
-  //tui_debug_tree(root, 0);
+
   //connecting buttons
+  TuiObject *prev_button = *((TuiObject **)darr_get(level_list->children, 0));
+  Levels_ButtonState *prev_btn_state = (Levels_ButtonState *)(prev_button->state);
+  assert(prev_btn_state != NULL && "first button did not have a state in levels");
+  prev_btn_state->dir_up = prev_button;
+
+  for(int i = 1; i < darr_size(level_list->children); ++i){
+    TuiObject *button = *((TuiObject **)darr_get(level_list->children, i));
+    Levels_ButtonState *btn_state = (Levels_ButtonState *)(button->state);
+    assert(btn_state != NULL && "on of the buttons did not have a state in levels");
+
+    prev_btn_state->dir_down = button;
+    btn_state->dir_up = prev_button;
+
+    prev_button = button;
+    prev_btn_state = btn_state;
+  }
 }
