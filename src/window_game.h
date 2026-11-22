@@ -7,8 +7,8 @@ void levels_root_render_action(TuiObject *self, Screen *s){
     for(int y = 0; y < self->size.y; y++){
       tui_putc(self, (Cell) {
         .c = ' ',
+        .foreground_color = COL_BLACK,
         .background_color = COL_DARKGRAY,
-        .foreground_color = COL_BLACK
       }, i32vec2_create(x, y), s);
     }
   }
@@ -30,7 +30,7 @@ void w_levels_init(TuiObject *root, char *level_name){
     .size = i32vec2_create(0, 0)
   });
 
-  Game_State *game_state = (Game_State *) tui_tuiobj_add_state(game, sizeof(Game_State));
+  Game_State *game_state = (Game_State *) tui_tuiobj_add_state(game, sizeof(Game_State), game_free_game_state);
   game_setup_game_state(level_name, game_state);
   game->size = game_state->size;
 

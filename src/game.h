@@ -31,7 +31,7 @@ typedef enum {
 
 void game_start(Game_State *game_state);
 void game_init(Game_State *game_state);
-void game_free_game_state(Game_State *state);
+void game_free_game_state(void *game_state);
 Game_State *game_setup_game_state(char *level_name, Game_State *state);
 
 #endif

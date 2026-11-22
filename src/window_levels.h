@@ -83,7 +83,7 @@ void w_levels_init(TuiObject *root){
     .size = root->size 
   });
   tui_tuiobj_set_render_action(window_root, levels_root_render_action);
-  Levels_RootState *window_root_state = tui_tuiobj_add_state(window_root, sizeof(Levels_RootState));
+  Levels_RootState *window_root_state = tui_tuiobj_add_state(window_root, sizeof(Levels_RootState), NULL);
   tui_events_subscribe(window_root, window_root_on_event);
 
   //hint
@@ -119,7 +119,7 @@ void w_levels_init(TuiObject *root){
       .offset = i32vec2_create(0, row),
       .size = i32vec2_create(MAX_LEVEL_NAME_LENGTH, 1)
     });
-    Levels_ButtonState *bs = tui_tuiobj_add_state(btn, sizeof(Levels_ButtonState));
+    Levels_ButtonState *bs = tui_tuiobj_add_state(btn, sizeof(Levels_ButtonState), NULL);
     bs->window_state = window_root_state;
     strncpy(bs->text, line, strcspn(line, "."));
     btn->size = i32vec2_create(strlen(bs->text), 1);
@@ -134,7 +134,7 @@ void w_levels_init(TuiObject *root){
     .offset = i32vec2_create(1, -1),
     .size = i32vec2_create(strlen(back_button_str), 1) 
   });
-  Levels_ButtonState *bs = tui_tuiobj_add_state(back_button, sizeof(Levels_ButtonState));
+  Levels_ButtonState *bs = tui_tuiobj_add_state(back_button, sizeof(Levels_ButtonState), NULL);
   bs->window_state = window_root_state;
   strncpy(bs->text, back_button_str, strlen(back_button_str));
   tui_tuiobj_set_render_action(back_button, levels_button_render_action);

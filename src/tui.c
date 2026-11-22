@@ -31,6 +31,7 @@ TuiObject *tui_create_tuiobj(TuiObject *parent, const TuiObjectDimensions *dimen
   tuiobj->on_event = NULL;
   tuiobj->state_size = 0;
   tuiobj->state = NULL;
+  tuiobj->state_free_action = NULL;
 
   return tuiobj;
 }
@@ -39,7 +40,7 @@ void tui_tuiobj_set_render_action(TuiObject *obj, void (*render_action)(TuiObjec
   obj->render_action = render_action;
 }
 
-void *tui_tuiobj_add_state(TuiObject *obj, int state_size){
+void *tui_tuiobj_add_state(TuiObject *obj, int state_size, void (*state_free_action)(void *)){
   if(obj->state == NULL) free(obj->state);
 
   void *p_state = calloc(1,state_size);
@@ -47,6 +48,7 @@ void *tui_tuiobj_add_state(TuiObject *obj, int state_size){
 
   obj->state = p_state;
   obj->state_size = state_size;
+  obj->state_free_action = state_free_action; 
   return p_state;
 }
 
@@ -73,7 +75,11 @@ void tui_free_tuiobj(TuiObject *tuiobj){
   }
 
   darr_free(tuiobj->children);
-  if(tuiobj->state != NULL) free(tuiobj->state);
+
+  if(tuiobj->state != NULL){
+    if(tuiobj->state_free_action != NULL) tuiobj->state_free_action(tuiobj->state);
+    free(tuiobj->state);
+  } 
 
   free(tuiobj); 
 }

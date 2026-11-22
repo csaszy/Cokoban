@@ -174,8 +174,10 @@ void game_start(Game_State *game_state){
     }
 }
 
-void game_free_game_state(Game_State *state){
-    free_state(state);
+void game_free_game_state(void *game_state){
+    Game_State *state = (Game_State *)game_state; 
+    free(state->map[0]);
+    free(state->map);
 }
 
 Game_State *game_setup_game_state(char *level_name, Game_State *state){

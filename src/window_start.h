@@ -87,7 +87,7 @@ void w_start_init(TuiObject *root){
     .size = i32vec2_create(15, 1)
   });
   tui_tuiobj_set_render_action(name_field, name_field_render);
-  tui_tuiobj_add_state(name_field, sizeof(NamefieldData));
+  tui_tuiobj_add_state(name_field, sizeof(NamefieldData), NULL);
 
   TuiObject *hint = tui_create_tuiobj(window_root, &(TuiObjectDimensions){
     .horizontal_alignment = ALIGN_CENTER,

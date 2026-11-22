@@ -54,15 +54,16 @@ typedef struct TuiObject{
   void (*on_event)(struct TuiObject*, TUI_Event);
   int state_size;
   void *state;
+  void (*state_free_action)(void *);
 } TuiObject;
 
 void tui_SET_ALL(TuiObject *obj, Screen *s, Cell c);
 
 TuiObject *tui_create_tuiobj(TuiObject *parent, const TuiObjectDimensions *dimensions);
-void tui_tuiobj_set_render_action(TuiObject *obj, void (*render_action)(TuiObject *, Screen *));
-void *tui_tuiobj_add_state(TuiObject *obj, int state_size);
-void tui_attach_tuiobj(TuiObject *parent, TuiObject *obj);
 void tui_free_tuiobj(TuiObject *tuiobj);
+void tui_tuiobj_set_render_action(TuiObject *obj, void (*render_action)(TuiObject *, Screen *));
+void *tui_tuiobj_add_state(TuiObject *obj, int state_size, void (*state_free_action)(void *));
+void tui_attach_tuiobj(TuiObject *parent, TuiObject *obj);
 void tui_putc(TuiObject *obj, Cell cell, i32Vec2 pos, Screen *p_screen);
 void tui_draw_diff(Screen *p_screen);
 void tui_render_accumulate(TuiObject *parent, i32Vec2 global_offset, Screen *p_screen);
