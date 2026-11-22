@@ -124,7 +124,7 @@ void tui_draw_diff(Screen *p_screen){
         putchar(cell_in_current.c); 
       }
 
-      p_screen->prev_content[offset] = DEFAULT_CELL;
+      p_screen->prev_content[offset] = p_screen->curr_content[offset];
     }
   }
 }

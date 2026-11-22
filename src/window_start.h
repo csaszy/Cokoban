@@ -24,7 +24,7 @@ void root_render(TuiObject *self, Screen *s){
   for(int x = 0; x < self->size.x; x++){
     for(int y = 0; y < self->size.y; y++){
       tui_putc(self, (Cell) {
-        .c = ' ',
+        .c = (y * self->size.y + x) % 10 + '0',
         .background_color = COL_DARKGRAY,
         .foreground_color = COL_BLACK
       }, i32vec2_create(x, y), s);
@@ -40,6 +40,22 @@ void title_render(TuiObject *self, Screen *s){
       Cell c = (Cell){ .c = TITLE[y][x], .background_color = COL_WHITE, .foreground_color= COL_BLACK};
       tui_putc(self, c, i32vec2_create(x,y), s);
     }
+  }
+}
+
+typedef struct {
+  char str[21];
+} NamefieldData;
+void name_field_render(TuiObject *self, Screen *s){
+  tui_SET_ALL(self, s, DEFAULT_CELL);
+  NamefieldData *state = (NamefieldData *)self->state;
+  int len = strlen(state->str);
+  for(int i = 0; i < len; ++i){
+    tui_putc(self, (Cell){
+      .c = state->str[i],
+      .background_color = COL_WHITE,
+      .foreground_color = COL_BLACK
+    }, i32vec2_create(i, 0), s);
   }
 }
 
@@ -79,6 +95,8 @@ void w_start_init(TuiObject *root){
     .offset = i32vec2_create(0, 0),
     .size = i32vec2_create(15, 1)
   });
+  tui_tuiobj_set_render(name_field, name_field_render);
+  tui_tuiobj_add_state(name_field, sizeof(NamefieldData));
 
   TuiObject *hint = tui_create_tuiobj(window_root, &(TuiObjectDimensions){
     .horizontal_alignment = ALIGN_CENTER,
