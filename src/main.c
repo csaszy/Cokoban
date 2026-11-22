@@ -9,6 +9,7 @@
 #include "game.h"
 #include "tui.h"
 #include "window_start.h"
+#include "window_levels.h"
 
 void main_game_loop(){
     bool exit = false;
@@ -22,7 +23,8 @@ void main_game_loop(){
         .size = i32vec2_create(screen->size.x, screen->size.y),
     });
 
-    w_start_init(root);
+    w_levels_init(root);
+    //w_start_init(root);
 
     while (!exit)
     {

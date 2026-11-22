@@ -1,19 +1,32 @@
-#include "darr.h";
-#include "tui.h";
+#ifndef EVENTS_H
+#define EVENTS_H
+
+#include "darr.h"
+#include "tui.h"
+
+typedef enum{
+    EVENT_KEYPRESS,
+    EVENT_GOTOLEVELSELECET,
+} TUI_EVENT_TYPE;
 
 typedef struct {
-  Darr tui_obj;//list of int: {index of child, index of child,...}
-
-} EventSubRecord;
+    TUI_EVENT_TYPE type;
+    char code;
+} TUI_KeypressEvent; 
 
 typedef struct {
-  Darr *table;
-} EventSubTable;
+    TUI_EVENT_TYPE type;
+    void *data;
+} TUI_GoToLevelSelectEvent; 
 
-void dispatch_render(TuiObject *head){
-  if(head->children != NULL){}
-};
+typedef union {
+    TUI_EVENT_TYPE type; 
+    TUI_KeypressEvent keypress;
+    TUI_GoToLevelSelectEvent level_select;
+} TUI_Event;
 
-void event_init(){
-  //create event-subscriber table
-}
+void tui_event_queue_add(TUI_Event event);
+void tui_event_queue_pop();
+void tui_dispatch_events();
+
+#endif

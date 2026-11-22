@@ -2,15 +2,6 @@
 #include <vec2/vec2.h>
 #include <string.h>
 
-#define WSTART_TITLE_OFFSET (i32Vec2){ .x = 0, .y = 3}
-#define WSTART_TITLE_SIZE (i32Vec2){ .x = 40, .y = 10}
-
-#define WSTART_NAMEFIELD_OFFSET (i32Vec2){ .x = 0, .y = 0}
-#define W1_NAMEFIELD_SIZE (i32Vec2){ .x = 15, .y = 1}
-
-#define W1_HINT_OFFSET (i32Vec2){ .x = 0, .y = 2}
-#define W1_HINT_SIZE (i32Vec2){ .x = 15, .y = 1}
-
 static const char *TITLE[] = {
 " _____ _____ _   _____________  ___   _   _ ",
 "/  __ \\  _  | | / /  _  | ___ \\/ _ \\ | \\ | |",
@@ -79,7 +70,7 @@ void w_start_init(TuiObject *root){
     .offset = i32vec2_create(0, 3),
     .size = root->size 
   });
-  tui_tuiobj_set_render(root, root_render);
+  tui_tuiobj_set_render_action(root, root_render);
 
   TuiObject *title = tui_create_tuiobj(window_root, &(TuiObjectDimensions){
     .horizontal_alignment = ALIGN_CENTER,
@@ -87,7 +78,7 @@ void w_start_init(TuiObject *root){
     .offset = i32vec2_create(0, 3),
     .size = i32vec2_create(46, 6)
   });
-  tui_tuiobj_set_render(title, title_render);
+  tui_tuiobj_set_render_action(title, title_render);
 
   TuiObject *name_field = tui_create_tuiobj(window_root, &(TuiObjectDimensions){
     .horizontal_alignment = ALIGN_CENTER,
@@ -95,7 +86,7 @@ void w_start_init(TuiObject *root){
     .offset = i32vec2_create(0, 0),
     .size = i32vec2_create(15, 1)
   });
-  tui_tuiobj_set_render(name_field, name_field_render);
+  tui_tuiobj_set_render_action(name_field, name_field_render);
   tui_tuiobj_add_state(name_field, sizeof(NamefieldData));
 
   TuiObject *hint = tui_create_tuiobj(window_root, &(TuiObjectDimensions){
@@ -104,5 +95,5 @@ void w_start_init(TuiObject *root){
     .offset = i32vec2_create(0, 2),
     .size = i32vec2_create(20, 1)
   });
-  tui_tuiobj_set_render(hint, hint_render);
+  tui_tuiobj_set_render_action(hint, hint_render);
 }

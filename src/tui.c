@@ -27,15 +27,16 @@ TuiObject *tui_create_tuiobj(TuiObject *parent, const TuiObjectDimensions *dimen
   tuiobj->offset = dimensions->offset;
   tuiobj->size = dimensions->size;
   tuiobj->_global_offset = i32vec2_create(0, 0);
-  tuiobj->render = NULL;
+  tuiobj->render_action = NULL;
+  tuiobj->on_event = NULL;
   tuiobj->state_size = 0;
   tuiobj->state = NULL;
 
   return tuiobj;
 }
 
-void tui_tuiobj_set_render(TuiObject *obj, void (*render)(TuiObject *, Screen *)){
-  obj->render = render;
+void tui_tuiobj_set_render_action(TuiObject *obj, void (*render_action)(TuiObject *, Screen *)){
+  obj->render_action = render_action;
 }
 
 void *tui_tuiobj_add_state(TuiObject *obj, int state_size){
@@ -91,6 +92,14 @@ void tui_putc(TuiObject *obj, Cell cell, i32Vec2 pos, Screen *p_screen){
     .y = obj->_global_offset.y + pos.y
   };
 
+  if(obj->parent != NULL){
+    TuiObject parent = *(obj->parent);
+    if(
+      global_position.x < parent._global_offset.x || global_position.x >= parent._global_offset.x + parent.size.x ||
+      global_position.y < parent._global_offset.y || global_position.y >= parent._global_offset.y + parent.size.y
+    ) return;
+  }
+
   if(
     global_position.x < 0 || global_position.x >= p_screen->size.x ||
     global_position.y < 0 || global_position.y >= p_screen->size.y
@@ -131,8 +140,8 @@ void tui_draw_diff(Screen *p_screen){
 
 void tui_render_accumulate(TuiObject *parent, i32Vec2 global_offset, Screen *p_screen){
   parent->_global_offset = global_offset;
-  if(parent->render != NULL)
-    parent->render(parent, p_screen);
+  if(parent->render_action != NULL)
+    parent->render_action(parent, p_screen);
 
   for(int i = 0; i < darr_size(parent->children); ++i){
     TuiObject **child = (TuiObject **) darr_get(parent->children, i);

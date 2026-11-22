@@ -7,6 +7,7 @@
 #include <vec2/vec2.h>
 #include <string.h>
 #include "darr.h"
+#include "events.h"
 #include "debugmalloc.h"
 
 #define DEFAULT_CELL (Cell) {       \
@@ -48,7 +49,8 @@ typedef struct TuiObject{
   i32Vec2 offset;
   i32Vec2 size;
   i32Vec2 _global_offset;
-  void (*render)(struct TuiObject*, Screen *); //self pointer 
+  void (*render_action)(struct TuiObject*, Screen *); //self pointer 
+  void (*on_event)(struct TuiObject*, TUI_Event event);
   int state_size;
   void *state;
 } TuiObject;
@@ -56,7 +58,7 @@ typedef struct TuiObject{
 void tui_SET_ALL(TuiObject *obj, Screen *s, Cell c);
 
 TuiObject *tui_create_tuiobj(TuiObject *parent, const TuiObjectDimensions *dimensions);
-void tui_tuiobj_set_render(TuiObject *obj, void (*render)(TuiObject *, Screen *));
+void tui_tuiobj_set_render_action(TuiObject *obj, void (*render_action)(TuiObject *, Screen *));
 void *tui_tuiobj_add_state(TuiObject *obj, int state_size);
 void tui_attach_tuiobj(TuiObject *parent, TuiObject *obj);
 void tui_free_tuiobj(TuiObject *tuiobj);
