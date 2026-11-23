@@ -11,9 +11,20 @@
 #include "window_context.h"
 
 void main_game_loop(){
-    bool exit = false;
+    const i32Vec2 default_screen_size = {80, 30};
+    i32Vec2 terminal_window_size = {0};
 
-    Screen *screen = tui_create_screen(i32vec2_create(80,30));
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    terminal_window_size.x = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    terminal_window_size.y = csbi.srWindow.Bottom - csbi.srWindow.Top;
+
+    Screen *screen = NULL;
+    if(terminal_window_size.x > 0 && terminal_window_size.y > 0){
+        screen = tui_create_screen(terminal_window_size);
+    }else{
+        screen = tui_create_screen(default_screen_size);
+    }
 
     TuiObject *root = tui_create_tuiobj(NULL, &(TuiObjectDimensions){
         .horizontal_alignment = ALIGN_START,
@@ -26,6 +37,7 @@ void main_game_loop(){
     w_context_init(root, event_system);
 
     econio_rawmode();
+    bool exit = false;
     EconioKey key;
     while (!exit)
     {

@@ -18,7 +18,8 @@ void nuke_all_children(TuiObject *self){
 
 void on_start_game(TuiObject *self, TUI_Event event){
     nuke_all_children(self);
-    w_game_init(self, event.start_game.level_name, self->p_event_system);
+    WindowContextState *state = (WindowContextState *)self->state;
+    w_game_init(self, event.start_game.level_name, state->player_name, self->p_event_system);
 }
 
 void on_go_to_level_select(TuiObject *self, TUI_Event event){
