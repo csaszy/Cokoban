@@ -36,6 +36,13 @@ void free_window_root_state(void *state){
   darr_free(window_root_state->score_list);
 }
 
+int cmp_score(const void *s1, const void *s2){
+  Score *score1 = (Score*)s1;
+  Score *score2 = (Score*)s2;
+
+  return score1->number_of_moves - score2->number_of_moves;
+}
+
 void load_scores(Darr *score_list, char *level_name){
   
   char path[MAX_LEVEL_NAME_LENGTH + 40];
@@ -55,6 +62,13 @@ void load_scores(Darr *score_list, char *level_name){
     strcpy(score.name, p_div);
     darr_push(score_list, &score);
   }
+
+  qsort(
+    score_list->data, 
+    darr_size(score_list), 
+    score_list->member_size, 
+    cmp_score
+  );
 
   fclose(f);
 }
