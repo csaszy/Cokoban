@@ -2,7 +2,7 @@
 #include "constants.h"
 #include "game.h"
 
-void levels_root_render_action(TuiObject *self, Screen *s){
+void game_root_render_action(TuiObject *self, Screen *s){
   for(int x = 0; x < self->size.x; x++){
     for(int y = 0; y < self->size.y; y++){
       tui_putc(self, (Cell) {
@@ -14,14 +14,14 @@ void levels_root_render_action(TuiObject *self, Screen *s){
   }
 }
 
-void w_levels_init(TuiObject *root, char *level_name){
+void w_game_init(TuiObject *root, char *level_name, EventSystem *event_system){
   TuiObject *window_root = tui_create_tuiobj(root, &(TuiObjectDimensions){
     .horizontal_alignment = ALIGN_START,
     .vertical_alignment = ALIGN_START,
     .offset = i32vec2_create(0, 0),
     .size = root->size 
   });
-  tui_tuiobj_set_render_action(window_root, levels_root_render_action);
+  tui_tuiobj_set_render_action(window_root, game_root_render_action);
   
   TuiObject *game = tui_create_tuiobj(window_root, &(TuiObjectDimensions){
     .horizontal_alignment = ALIGN_CENTER,

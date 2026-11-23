@@ -29,6 +29,7 @@ TuiObject *tui_create_tuiobj(TuiObject *parent, const TuiObjectDimensions *dimen
   tuiobj->_global_offset = i32vec2_create(0, 0);
   tuiobj->render_action = NULL;
   tuiobj->on_event = NULL;
+  tuiobj->p_event_system = NULL;
   tuiobj->state_size = 0;
   tuiobj->state = NULL;
   tuiobj->state_free_action = NULL;
@@ -224,21 +225,41 @@ void tui_free_screen(Screen *screen){
 }
 
 //event stuff
-void tui_events_subscribe(TuiObject *obj, void (*callback)(TuiObject*, TUI_Event)){
+void tui_events_subscribe(TuiObject *obj, void (*callback)(TuiObject*, TUI_Event), EventSystem *event_system){
   if(obj == NULL) return;
+  if(obj->p_event_system == NULL) obj->p_event_system = event_system;
   obj->on_event = callback;
 }
 
-void tui_dispatch_event(TuiObject *root, TUI_Event event){
+void tui_events_push(TUI_Event event, EventSystem *event_system){
+  if(event_system == NULL) return;
+  darr_push(event_system->event_queue, &event);
+}
+
+void _tui_events_pop(EventSystem *event_system){
+  if(event_system == NULL) return;
+  darr_remove(event_system->event_queue, 0);
+}
+
+void _tui_dispatch_event(TuiObject *root, TUI_Event event){
   //idk hasrautes szeruen elsoszor a gyerek nodeokon dispatchelunk aztan majd lesz vmi
   if(root == NULL) return;
   for(int i = 0; i < darr_size(root->children); i++){
     TuiObject **child = (TuiObject **) darr_get(root->children, i);
-    tui_dispatch_event(*child, event);
+    _tui_dispatch_event(*child, event);
   }
 
   if(root->on_event != NULL){
     root->on_event(root, event);
+  }
+}
+
+void tui_dispatch_events_in_queue(TuiObject *root, EventSystem *event_system){
+  if(event_system == NULL) return;
+  while (darr_size(event_system->event_queue) > 0) {
+    TUI_Event *current_event = (TUI_Event*)darr_get(event_system->event_queue, darr_size(event_system->event_queue) - 1);
+    _tui_dispatch_event(root, *current_event);
+    _tui_events_pop(event_system);
   }
 }
 

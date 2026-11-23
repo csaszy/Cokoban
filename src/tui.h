@@ -52,6 +52,7 @@ typedef struct TuiObject{
   i32Vec2 _global_offset;
   void (*render_action)(struct TuiObject*, Screen *); //self pointer 
   void (*on_event)(struct TuiObject*, TUI_Event);
+  EventSystem *p_event_system;
   int state_size;
   void *state;
   void (*state_free_action)(void *);
@@ -68,14 +69,15 @@ void tui_putc(TuiObject *obj, Cell cell, i32Vec2 pos, Screen *p_screen);
 void tui_draw_diff(Screen *p_screen);
 void tui_render_accumulate(TuiObject *parent, i32Vec2 global_offset, Screen *p_screen);
 void tui_render(TuiObject *root, Screen *p_screen);
+
 Screen *tui_create_screen(i32Vec2 size);
 void tui_free_screen(Screen *screen);
 
-void tui_dispatch_event(TuiObject *root, TUI_Event event);
-void tui_events_dispatch(TuiObject *root);
-void tui_event_system_init();
-void tui_event_system_free();
-void tui_events_subscribe(TuiObject *obj, void (*callback)(TuiObject*, TUI_Event));
+void tui_events_subscribe(TuiObject *obj, void (*callback)(TuiObject*, TUI_Event), EventSystem *event_system);
+void tui_events_push(TUI_Event event, EventSystem *event_system);
+void _tui_events_pop(EventSystem *event_system);
+void _tui_dispatch_event(TuiObject *root, TUI_Event event);
+void tui_dispatch_events_in_queue(TuiObject *root, EventSystem *event_system);
 
 void tui_debug_tree_print_sep(int level);
 void tui_debug_tree(TuiObject *root, int level);

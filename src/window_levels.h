@@ -44,7 +44,7 @@ void levels_button_render_action(TuiObject *self, Screen *s){
   }
 }
 
-void levels_hint_render(TuiObject *self, Screen *s){
+void levels_hint_render_action(TuiObject *self, Screen *s){
   const char *str = FIRST_HINT_STR;
   int c = 0;
   for(int i = 0; i < self->size.x; ++i){
@@ -54,6 +54,21 @@ void levels_hint_render(TuiObject *self, Screen *s){
       .foreground_color = COL_BLACK
     }, i32vec2_create(i, 0), s);
     if(str[c] != '\0') c++;
+  }
+}
+
+void button_on_event(TuiObject *self, TUI_Event event){
+  if(event.type != EVENT_KEYPRESS) return;
+
+  Levels_ButtonState *state = (Levels_ButtonState *)self->state;
+  if(self != state->window_state->selected_child) return;
+
+  if(event.keypress.key == KEY_ENTER){
+    TUI_Event e = (TUI_Event) {
+      .start_game.type = EVENT_STARTGAME,
+    };
+    strncpy(e.start_game.level_name, state->text, MAX_LEVEL_NAME_LENGTH);
+    tui_events_push(e, self->p_event_system); 
   }
 }
 
@@ -75,7 +90,7 @@ void window_root_on_event(TuiObject *self, TUI_Event event){
   }
 }
 
-void w_levels_init(TuiObject *root){
+void w_levels_init(TuiObject *root, EventSystem *event_system){
   TuiObject *window_root = tui_create_tuiobj(root, &(TuiObjectDimensions){
     .horizontal_alignment = ALIGN_START,
     .vertical_alignment = ALIGN_START,
@@ -84,7 +99,7 @@ void w_levels_init(TuiObject *root){
   });
   tui_tuiobj_set_render_action(window_root, levels_root_render_action);
   Levels_RootState *window_root_state = tui_tuiobj_add_state(window_root, sizeof(Levels_RootState), NULL);
-  tui_events_subscribe(window_root, window_root_on_event);
+  tui_events_subscribe(window_root, window_root_on_event, event_system);
 
   //hint
   TuiObject *hint = tui_create_tuiobj(window_root, &(TuiObjectDimensions){
@@ -93,7 +108,7 @@ void w_levels_init(TuiObject *root){
     .offset = i32vec2_create(1, 1),
     .size = i32vec2_create(strlen(FIRST_HINT_STR), 1) 
   });
-  tui_tuiobj_set_render_action(hint, levels_hint_render);
+  tui_tuiobj_set_render_action(hint, levels_hint_render_action);
 
   //just a 'div' to render list in the middle of the screen
   TuiObject *level_list = tui_create_tuiobj(window_root, &(TuiObjectDimensions){
@@ -123,7 +138,10 @@ void w_levels_init(TuiObject *root){
     bs->window_state = window_root_state;
     strncpy(bs->text, line, strcspn(line, "."));
     btn->size = i32vec2_create(strlen(bs->text), 1);
+
     tui_tuiobj_set_render_action(btn, levels_button_render_action);
+
+    tui_events_subscribe(btn, button_on_event, event_system);
     row++;
   }
 

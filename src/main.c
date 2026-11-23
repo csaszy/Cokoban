@@ -8,8 +8,7 @@
 
 #include "game.h"
 #include "tui.h"
-#include "window_start.h"
-#include "window_levels.h"
+#include "window_context.h"
 
 void main_game_loop(){
     bool exit = false;
@@ -23,8 +22,8 @@ void main_game_loop(){
         .size = i32vec2_create(screen->size.x, screen->size.y),
     });
 
-    w_levels_init(root);
-    //w_start_init(root);
+    EventSystem *event_system = tui_create_event_system();
+    w_context_init(root, event_system);
 
     econio_rawmode();
     EconioKey key;
@@ -36,16 +35,18 @@ void main_game_loop(){
                 exit = true;
             break;
             default:
-                tui_dispatch_event(root, (TUI_Event){
+                tui_events_push((TUI_Event){
                     .keypress.type = EVENT_KEYPRESS,
                     .keypress.key = key 
-                });
+                }, event_system);
             break;
         }
+        tui_dispatch_events_in_queue(root, event_system);
     }
 
     tui_free_tuiobj(root);
     tui_free_screen(screen);
+    tui_free_event_system(event_system);
 }
 
 
