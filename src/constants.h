@@ -1,6 +1,7 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#define MAX_PLAYER_NAME_LENGTH 20
 #define MAX_LEVEL_NAME_LENGTH 20
 
 #endif
