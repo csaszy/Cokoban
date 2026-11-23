@@ -9,15 +9,8 @@ typedef struct{
     char player_name[MAX_PLAYER_NAME_LENGTH + 1];
 } WindowContextState;
 
-void nuke_all_children(TuiObject *self){
-    for(int i = 0; i < darr_size(self->children); ++i){
-        TuiObject **child = (TuiObject **)darr_get(self->children, i);
-        tui_free_tuiobj(*child);
-    }
-}
-
 void on_start_game(TuiObject *self, TUI_Event event){
-    nuke_all_children(self);
+    tui_remove_and_free_all_child(self);
     WindowContextState *state = (WindowContextState *)self->state;
     w_game_init(self, event.start_game.level_name, state->player_name, self->p_event_system);
 }
@@ -25,7 +18,7 @@ void on_start_game(TuiObject *self, TUI_Event event){
 void on_go_to_level_select(TuiObject *self, TUI_Event event){
     WindowContextState *state = (WindowContextState *)self->state;
     strncpy(state->player_name, event.level_select.data, MAX_PLAYER_NAME_LENGTH); 
-    nuke_all_children(self);
+    tui_remove_and_free_all_child(self);
     w_levels_init(self, self->p_event_system);
 }
 

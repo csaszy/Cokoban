@@ -43,7 +43,7 @@ void main_game_loop(){
     {
         tui_render(root, screen);
         switch(key = econio_getch()){
-            case KEY_ESCAPE:
+            case 'q':
                 exit = true;
             break;
             default:

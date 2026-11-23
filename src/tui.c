@@ -60,6 +60,13 @@ void tui_attach_tuiobj(TuiObject *parent, TuiObject *obj){
   }
 }
 
+void tui_remove_and_free_all_child(TuiObject *obj){
+  for(int i = 0; i < darr_size(obj->children); ++i){
+    TuiObject **child = (TuiObject **)darr_get(obj->children, i);
+    tui_free_tuiobj(*child);
+  }
+}
+
 void tui_free_tuiobj(TuiObject *tuiobj){
   assert(tuiobj->children != NULL && "tuiobj missing children Darr");
 

@@ -180,12 +180,13 @@ void game_free_game_state(void *game_state){
     free(state->map);
 }
 
-Game_State *game_setup_game_state(char *level_name, Game_State *state){
+Game_State *game_setup_game_state(Game_State *state, char *level_name, char *player_name){
     if(state == NULL) return NULL;
 
     state->size = i32vec2_create(0, 0);
     state->wallcount = 0;
     state->boxcount = 0;
+    state->p_player_name = player_name;
 
     char path[MAX_LEVEL_NAME_LENGTH + 50]; //yeah ik
     sprintf(path, ".\\assets\\levels\\%s.xsb", level_name);

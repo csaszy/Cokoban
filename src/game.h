@@ -9,6 +9,7 @@ typedef struct {
     char **map;
     int wallcount;
     int boxcount;
+    char *p_player_name;
 } Game_State;
 
 // from: http://sokoban.org/about_sokoban.php 
@@ -32,6 +33,6 @@ typedef enum {
 void game_start(Game_State *game_state);
 void game_init(Game_State *game_state);
 void game_free_game_state(void *game_state);
-Game_State *game_setup_game_state(char *level_name, Game_State *state);
+Game_State *game_setup_game_state(Game_State *state, char *level_name, char *player_name);
 
 #endif

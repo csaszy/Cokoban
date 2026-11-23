@@ -45,8 +45,8 @@ void game_on_event(TuiObject *self, TUI_Event event){
     case KEY_ESCAPE:
       tui_events_push((TUI_Event){
         .level_select.type = EVENT_GOTOLEVELSELECET,
-        .level_select.data = 
-      })
+        .level_select.data = game_state->p_player_name
+      }, self->p_event_system);
       break;
     default:
       break;
@@ -63,7 +63,7 @@ void w_game_init(TuiObject *root, char *level_name, char *player_name, EventSyst
   tui_tuiobj_set_render_action(window_root, game_root_render_action);
 
   Game_State *game_state = (Game_State *) tui_tuiobj_add_state(window_root, sizeof(Game_State), game_free_game_state);
-  game_setup_game_state(level_name, player_name, game_state);
+  game_setup_game_state(game_state, level_name, player_name);
 
   tui_events_subscribe(window_root, game_on_event, event_system);
   
