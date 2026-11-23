@@ -123,7 +123,7 @@ void free_state(Game_State *state){
     free(state->map);
 }
 
-int move_player(Game_Direction dir, Game_State *state){
+int game_move_player(Game_Direction dir, Game_State *state){
     Game_State new_state = create_copy_state(state);
 
     virtual_move_player(dir, &new_state);
@@ -142,39 +142,7 @@ int move_player(Game_Direction dir, Game_State *state){
     return 0;
 }
 
-void game_start(Game_State *game_state){
-    bool exit = false;
-    econio_rawmode();
-    while (!exit)
-    {
-        game_print(game_state);
-
-        switch(econio_getch()){
-            case KEY_UP:
-                move_player(DIR_UP, game_state);
-                break;
-            case KEY_DOWN:
-                move_player(DIR_DOWN, game_state);
-                break;
-            case KEY_LEFT:
-                move_player(DIR_LEFT, game_state);
-                break;
-            case KEY_RIGHT:
-                move_player(DIR_RIGHT, game_state);
-                break;
-            case KEY_ESCAPE:
-                exit = true;
-            break;
-        }
-
-        //just to be safe
-        assert(count_celltype(game_state, CT_BOX) + count_celltype(game_state, CT_BOX_ON_GOAL) == game_state->boxcount); 
-        assert(count_celltype(game_state, CT_WALL) == game_state->wallcount); 
-        assert(count_celltype(game_state, CT_BOX) == count_celltype(game_state, CT_GOAL) + count_celltype(game_state, CT_MAN_ON_GOAL)); 
-    }
-}
-
-void game_free_game_state(void *game_state){
+void game_free_game_state_internals(void *game_state){
     Game_State *state = (Game_State *)game_state; 
     free(state->map[0]);
     free(state->map);
@@ -187,6 +155,7 @@ Game_State *game_setup_game_state(Game_State *state, char *level_name, char *pla
     state->wallcount = 0;
     state->boxcount = 0;
     state->p_player_name = player_name;
+    strncpy(state->level_name, level_name, MAX_LEVEL_NAME_LENGTH);
 
     char path[MAX_LEVEL_NAME_LENGTH + 50]; //yeah ik
     sprintf(path, ".\\assets\\levels\\%s.xsb", level_name);

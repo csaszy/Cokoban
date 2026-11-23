@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include <vec2/vec2.h>
+#include "constants.h"
 
 typedef struct {
     i32Vec2 player;
@@ -10,6 +11,7 @@ typedef struct {
     int wallcount;
     int boxcount;
     char *p_player_name;
+    char level_name[MAX_LEVEL_NAME_LENGTH+1];
 } Game_State;
 
 // from: http://sokoban.org/about_sokoban.php 
@@ -30,9 +32,8 @@ typedef enum {
     DIR_RIGHT = 0b10
 } Game_Direction;
 
-void game_start(Game_State *game_state);
-void game_init(Game_State *game_state);
-void game_free_game_state(void *game_state);
+int game_move_player(Game_Direction dir, Game_State *state);
 Game_State *game_setup_game_state(Game_State *state, char *level_name, char *player_name);
+void game_free_game_state_internals(void *game_state);
 
 #endif
