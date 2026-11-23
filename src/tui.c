@@ -122,6 +122,18 @@ void tui_putc(TuiObject *obj, Cell cell, i32Vec2 pos, Screen *p_screen){
   p_screen->curr_content[global_position.y * p_screen->size.x + global_position.x] = cell;
 }
 
+int tui_puts(TuiObject *obj, char *str, Cell cell, i32Vec2 pos, Screen *p_screen){
+  Cell sample = cell;
+  int count = 0;
+  for(int i = 0; str[i] != '\0'; ++i){
+    sample.c = str[i];
+    pos.x++;
+    tui_putc(obj, sample, pos, p_screen);
+    count++;
+  }
+  return count;
+}
+
 bool eq_cell(Cell *c1, Cell *c2){
   return (
     c1->c == c2->c &&

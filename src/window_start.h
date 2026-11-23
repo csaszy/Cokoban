@@ -3,6 +3,7 @@
 #include "tui.h"
 #include "events.h"
 #include "constants.h"
+#include "window_constants.h"
 
 static const char *TITLE[] = {
 " _____ _____ _   _____________  ___   _   _ ",
@@ -12,18 +13,6 @@ static const char *TITLE[] = {
 "| \\__/\\ \\_/ / |\\  \\ \\_/ / |_/ / | | || |\\  |",
 " \\____/\\___/\\_| \\_/\\___/\\____/\\_| |_/\\_| \\_/",
 };
-
-void root_render(TuiObject *self, Screen *s){
-  for(int x = 0; x < self->size.x; x++){
-    for(int y = 0; y < self->size.y; y++){
-      tui_putc(self, (Cell) {
-        .c = ' ',
-        .background_color = COL_DARKGRAY,
-        .foreground_color = COL_BLACK
-      }, i32vec2_create(x, y), s);
-    }
-  }
-}
 
 void title_render(TuiObject *self, Screen *s){
   int width = strlen(TITLE[0]);
@@ -100,7 +89,7 @@ void w_start_init(TuiObject *root, EventSystem *event_system){
     .offset = i32vec2_create(0, 3),
     .size = root->size 
   });
-  tui_tuiobj_set_render_action(root, root_render);
+  tui_tuiobj_set_render_action(root, wc_root_render_action);
 
   TuiObject *title = tui_create_tuiobj(window_root, &(TuiObjectDimensions){
     .horizontal_alignment = ALIGN_CENTER,

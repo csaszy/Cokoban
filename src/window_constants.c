@@ -1,5 +1,17 @@
 #include "window_constants.h"
 
+void wc_root_render_action(TuiObject *self, Screen *s){
+  for(int x = 0; x < self->size.x; x++){
+    for(int y = 0; y < self->size.y; y++){
+      tui_putc(self, (Cell) {
+        .c = ' ',
+        .background_color = COL_DARKGRAY,
+        .foreground_color = COL_BLACK
+      }, i32vec2_create(x, y), s);
+    }
+  }
+}
+
 void wc_hint_render_action(TuiObject *self, Screen *s){
   HintState *state = (HintState *)self->state; 
   int c = 0;

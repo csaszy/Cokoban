@@ -4,17 +4,6 @@
 #include "window_constants.h"
 
 //window 
-void game_root_render_action(TuiObject *self, Screen *s){
-  for(int x = 0; x < self->size.x; x++){
-    for(int y = 0; y < self->size.y; y++){
-      tui_putc(self, (Cell) {
-        .c = ' ',
-        .foreground_color = COL_BLACK,
-        .background_color = COL_DARKGRAY,
-      }, i32vec2_create(x, y), s);
-    }
-  }
-}
 void game_root_on_event(TuiObject *self, TUI_Event event){
   if(event.type != EVENT_KEYPRESS) return;
   Game_State *game_state = (Game_State *)self->state;
@@ -88,7 +77,7 @@ void w_game_init(TuiObject *root, char *level_name, char *player_name, EventSyst
     .offset = i32vec2_create(0, 0),
     .size = root->size 
   });
-  tui_tuiobj_set_render_action(window_root, game_root_render_action);
+  tui_tuiobj_set_render_action(window_root, wc_root_render_action);
 
   Game_State *game_state = (Game_State *) tui_tuiobj_add_state(window_root, sizeof(Game_State), game_free_game_state_internals);
   game_setup_game_state(game_state, level_name, player_name);

@@ -69,6 +69,7 @@ void tui_remove_and_free_all_child(TuiObject *obj);
 Screen *tui_create_screen(i32Vec2 size);
 void tui_free_screen(Screen *screen);
 void tui_putc(TuiObject *obj, Cell cell, i32Vec2 pos, Screen *p_screen);
+int tui_puts(TuiObject *obj, char *str, Cell cell, i32Vec2 pos, Screen *p_screen);
 void tui_draw_diff(Screen *p_screen);
 void tui_render_accumulate(TuiObject *parent, i32Vec2 global_offset, Screen *p_screen);
 void tui_render(TuiObject *root, Screen *p_screen);

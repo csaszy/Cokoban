@@ -13,18 +13,6 @@ typedef struct {
   TuiObject *level_list;
 } Levels_RootState;
 
-void levels_root_render_action(TuiObject *self, Screen *s){
-  for(int x = 0; x < self->size.x; x++){
-    for(int y = 0; y < self->size.y; y++){
-      tui_putc(self, (Cell) {
-        .c = ' ',
-        .background_color = COL_DARKGRAY,
-        .foreground_color = COL_BLACK
-      }, i32vec2_create(x, y), s);
-    }
-  }
-}
-
 typedef struct {
   char text[MAX_LEVEL_NAME_LENGTH];
   Levels_RootState *window_state;
@@ -52,12 +40,28 @@ void button_on_event(TuiObject *self, TUI_Event event){
   Levels_ButtonState *state = (Levels_ButtonState *)self->state;
   if(self != state->window_state->selected_child) return;
 
+  switch (event.keypress.key) {
+    case KEY_ENTER:{
+      TUI_Event e = (TUI_Event) {
+        .start_game.type = EVENT_STARTGAME,
+      };
+      strncpy(e.start_game.level_name, state->text, MAX_LEVEL_NAME_LENGTH);
+      tui_events_push(e, self->p_event_system); 
+      break;
+    }
+    case 'd':{
+      TUI_Event e = (TUI_Event) {
+        .scoreboard.type = EVENT_GOTOSCOREBOARD,
+      };
+      strncpy(e.scoreboard.level_name, state->text, MAX_LEVEL_NAME_LENGTH);
+      tui_events_push(e, self->p_event_system); 
+      break;
+    }
+    default:
+      break;
+  }
+
   if(event.keypress.key == KEY_ENTER){
-    TUI_Event e = (TUI_Event) {
-      .start_game.type = EVENT_STARTGAME,
-    };
-    strncpy(e.start_game.level_name, state->text, MAX_LEVEL_NAME_LENGTH);
-    tui_events_push(e, self->p_event_system); 
   }
 }
 void shift_buttons_y_offset(TuiObject *level_list, int offset){
@@ -106,7 +110,7 @@ void w_levels_init(TuiObject *root, EventSystem *event_system){
     .offset = i32vec2_create(0, 0),
     .size = root->size 
   });
-  tui_tuiobj_set_render_action(window_root, levels_root_render_action);
+  tui_tuiobj_set_render_action(window_root, wc_root_render_action);
   Levels_RootState *window_root_state = tui_tuiobj_add_state(window_root, sizeof(Levels_RootState), NULL);
   tui_events_subscribe(window_root, window_root_on_event, event_system);
 
@@ -151,7 +155,7 @@ void w_levels_init(TuiObject *root, EventSystem *event_system){
   TuiObject *level_list = tui_create_tuiobj(window_root, &(TuiObjectDimensions){
     .horizontal_alignment = ALIGN_CENTER,
     .vertical_alignment = ALIGN_START,
-    .offset = i32vec2_create(2, LEVEL_LIST_PADDING),
+    .offset = i32vec2_create(0, LEVEL_LIST_PADDING),
     .size = i32vec2_create(10, window_root->size.y - LEVEL_LIST_PADDING * 2) 
   });
   window_root_state->level_list = level_list;

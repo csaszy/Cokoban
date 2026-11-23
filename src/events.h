@@ -8,6 +8,7 @@
 typedef enum TUI_EVENT_TYPE{
     EVENT_KEYPRESS,
     EVENT_GOTOLEVELSELECET,
+    EVENT_GOTOSCOREBOARD,
     EVENT_STARTGAME,
 } TUI_EVENT_TYPE;
 
@@ -24,12 +25,18 @@ typedef struct {
 typedef struct {
     TUI_EVENT_TYPE type;
     char level_name[MAX_LEVEL_NAME_LENGTH];
+} TUI_GoToScoreboard; 
+
+typedef struct {
+    TUI_EVENT_TYPE type;
+    char level_name[MAX_LEVEL_NAME_LENGTH];
 } TUI_StartGameEvent; 
 
 typedef union {
     TUI_EVENT_TYPE type; 
     TUI_KeypressEvent keypress;
     TUI_GoToLevelSelectEvent level_select;
+    TUI_GoToScoreboard scoreboard;
     TUI_StartGameEvent start_game;
 } TUI_Event;
 
