@@ -207,7 +207,9 @@ void tui_render(TuiObject *root, Screen *p_screen){
   tui_render_accumulate(root, (i32Vec2){.x = 0, .y = 0}, p_screen);
   tui_draw_diff(p_screen);
 
-  econio_gotoxy(p_screen->size.x, p_screen->size.y);
+  econio_gotoxy(0, p_screen->size.y);
+  econio_textbackground(COL_BLACK);
+  econio_textcolor(COL_WHITE);
 }
 
 Screen *tui_create_screen(i32Vec2 size){
