@@ -1,30 +1,7 @@
 #include "tui.h"
 #include "constants.h"
 #include "game.h"
-
-#define HINT_PADDING 3
-
-// hints
-typedef struct{
-  char *text;
-} HintState;
-void game_hint_render_action(TuiObject *self, Screen *s){
-  HintState *state = (HintState *)self->state; 
-  int c = 0;
-  for(int i = 0; i < self->size.x; ++i){
-    tui_putc(self, (Cell) {
-      .c = state->text[c] != '\0' ? state->text[c] : ' ',
-      .background_color = COL_DARKGRAY,
-      .foreground_color = COL_BLACK
-    }, i32vec2_create(i, 0), s);
-    if(state->text[c] != '\0') c++;
-  }
-}
-void game_set_hint_text_helper(TuiObject *hint, char *text){
-  HintState *hint_state = tui_tuiobj_add_state(hint, sizeof(HintState), NULL);
-  hint_state->text = text;
-  hint->size = i32vec2_create(strlen(text), 1);
-}
+#include "window_constants.h"
 
 //window 
 void game_root_render_action(TuiObject *self, Screen *s){
@@ -134,35 +111,35 @@ void w_game_init(TuiObject *root, char *level_name, char *player_name, EventSyst
     &(TuiObjectDimensions){
       .horizontal_alignment = ALIGN_START,
       .vertical_alignment = ALIGN_END,
-      .offset = i32vec2_create(HINT_PADDING, -HINT_PADDING),
+      .offset = i32vec2_create(HINT_PADDING_X, -HINT_PADDING_Y),
       .size = i32vec2_create(0, 0)
     }
   );
-  game_set_hint_text_helper(hint1, "[R] restart");
-  tui_tuiobj_set_render_action(hint1, game_hint_render_action);
+  wc_set_hint_text_helper(hint1, "[R] restart");
+  tui_tuiobj_set_render_action(hint1, wc_hint_render_action);
 
   TuiObject *hint2 = tui_create_tuiobj(
     window_root,
     &(TuiObjectDimensions){
       .horizontal_alignment = ALIGN_CENTER,
       .vertical_alignment = ALIGN_END,
-      .offset = i32vec2_create(-HINT_PADDING, -HINT_PADDING),
+      .offset = i32vec2_create(0, -HINT_PADDING_Y),
       .size = i32vec2_create(0, 0)
     }
   );
-  game_set_hint_text_helper(hint2, " [ESC] vissza");
-  tui_tuiobj_set_render_action(hint2, game_hint_render_action);
+  wc_set_hint_text_helper(hint2, "[ESC] vissza");
+  tui_tuiobj_set_render_action(hint2, wc_hint_render_action);
 
   TuiObject *hint3 = tui_create_tuiobj(
     window_root,
     &(TuiObjectDimensions){
       .horizontal_alignment = ALIGN_END,
       .vertical_alignment = ALIGN_END,
-      .offset = i32vec2_create(-HINT_PADDING, -HINT_PADDING),
+      .offset = i32vec2_create(-HINT_PADDING_X, -HINT_PADDING_Y),
       .size = i32vec2_create(0, 0)
     }
   );
-  game_set_hint_text_helper(hint3, "[Q] kilepes");
-  tui_tuiobj_set_render_action(hint3, game_hint_render_action);
+  wc_set_hint_text_helper(hint3, "[Q] kilepes");
+  tui_tuiobj_set_render_action(hint3, wc_hint_render_action);
   
 }

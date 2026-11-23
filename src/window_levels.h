@@ -2,20 +2,16 @@
 #include <vec2/vec2.h>
 #include <string.h>
 
+#include "game.h"
 #include "constants.h"
+#include "window_constants.h"
 
 #define LEVEL_LIST_PADDING 3
-#define FIRST_HINT_STR "Valassz a palyak kozul:"
 
 typedef struct {
   TuiObject *selected_child;
+  TuiObject *level_list;
 } Levels_RootState;
-
-typedef struct {
-  char text[MAX_LEVEL_NAME_LENGTH];
-  Levels_RootState *window_state;
-  TuiObject *dir_up, *dir_down, *dir_left, *dir_rigth;
-} Levels_ButtonState;
 
 void levels_root_render_action(TuiObject *self, Screen *s){
   for(int x = 0; x < self->size.x; x++){
@@ -29,6 +25,12 @@ void levels_root_render_action(TuiObject *self, Screen *s){
   }
 }
 
+typedef struct {
+  char text[MAX_LEVEL_NAME_LENGTH];
+  Levels_RootState *window_state;
+  TuiObject *dir_up, *dir_down, *dir_left, *dir_rigth;
+} Levels_ButtonState;
+
 void levels_button_render_action(TuiObject *self, Screen *s){
   Levels_ButtonState *self_state = (Levels_ButtonState *)(self->state);
   const char *str = self_state->text;
@@ -39,19 +41,6 @@ void levels_button_render_action(TuiObject *self, Screen *s){
       .c = str[c] != '\0' ? str[c] : ' ',
       .background_color = is_selected ? COL_WHITE : COL_BLACK,
       .foreground_color = is_selected ? COL_BLACK : COL_WHITE
-    }, i32vec2_create(i, 0), s);
-    if(str[c] != '\0') c++;
-  }
-}
-
-void levels_hint_render_action(TuiObject *self, Screen *s){
-  const char *str = FIRST_HINT_STR;
-  int c = 0;
-  for(int i = 0; i < self->size.x; ++i){
-    tui_putc(self, (Cell) {
-      .c = str[c] != '\0' ? str[c] : ' ',
-      .background_color = COL_WHITE,
-      .foreground_color = COL_BLACK
     }, i32vec2_create(i, 0), s);
     if(str[c] != '\0') c++;
   }
@@ -71,10 +60,18 @@ void button_on_event(TuiObject *self, TUI_Event event){
     tui_events_push(e, self->p_event_system); 
   }
 }
+void shift_buttons_y_offset(TuiObject *level_list, int offset){
+  for(int i = 0; i < darr_size(level_list->children); ++i){
+    TuiObject **button = (TuiObject **) darr_get(level_list->children, i);
+    (*button)->offset.y += offset;
+  }
+}
 
 void window_root_on_event(TuiObject *self, TUI_Event event){
   Levels_RootState *window_state = (Levels_RootState *)self->state;
-  Levels_ButtonState *curr_sel_button_state = ((Levels_ButtonState *)((TuiObject *)window_state->selected_child)->state);
+  TuiObject *curr_sel_button = (TuiObject *)window_state->selected_child;
+  Levels_ButtonState *curr_sel_button_state = (Levels_ButtonState *)curr_sel_button->state;
+
   if(event.type == EVENT_KEYPRESS){
     switch(event.keypress.key){
       case(KEY_DOWN):
@@ -87,6 +84,18 @@ void window_root_on_event(TuiObject *self, TUI_Event event){
       break;
       default: break;
     }
+  }
+
+  if(window_state->level_list == NULL) assert(0 && "no good");
+
+  //cursor went off screen towards bottom 
+  int end_of_list_y = window_state->level_list->_global_offset.y + window_state->level_list->size.y;
+  if(curr_sel_button->_global_offset.y >= end_of_list_y){
+    shift_buttons_y_offset(window_state->level_list, -curr_sel_button->size.y);
+  }
+  //cursor went off screen towards top
+  if(curr_sel_button->_global_offset.y < window_state->level_list->_global_offset.y){
+    shift_buttons_y_offset(window_state->level_list, curr_sel_button->size.y);
   }
 }
 
@@ -102,21 +111,50 @@ void w_levels_init(TuiObject *root, EventSystem *event_system){
   tui_events_subscribe(window_root, window_root_on_event, event_system);
 
   //hint
-  TuiObject *hint = tui_create_tuiobj(window_root, &(TuiObjectDimensions){
-    .horizontal_alignment = ALIGN_START,
+  TuiObject *hint_select = tui_create_tuiobj(window_root, &(TuiObjectDimensions){
+    .horizontal_alignment = ALIGN_CENTER,
     .vertical_alignment = ALIGN_START,
-    .offset = i32vec2_create(1, 1),
-    .size = i32vec2_create(strlen(FIRST_HINT_STR), 1) 
+    .offset = i32vec2_create(0, HINT_PADDING_Y),
+    .size = i32vec2_create(0, 0) 
   });
-  tui_tuiobj_set_render_action(hint, levels_hint_render_action);
+  wc_set_hint_text_helper(hint_select, "Valassz egy palyat:");
+  tui_tuiobj_set_render_action(hint_select, wc_hint_render_action);
+
+  TuiObject *hint_scoreboard = tui_create_tuiobj(window_root, &(TuiObjectDimensions){
+    .horizontal_alignment = ALIGN_START,
+    .vertical_alignment = ALIGN_END,
+    .offset = i32vec2_create(HINT_PADDING_X, -HINT_PADDING_Y),
+    .size = i32vec2_create(0, 0) 
+  });
+  wc_set_hint_text_helper(hint_scoreboard, "[D] Dicseglista");
+  tui_tuiobj_set_render_action(hint_scoreboard, wc_hint_render_action);
+
+  TuiObject *hint_start = tui_create_tuiobj(window_root, &(TuiObjectDimensions){
+    .horizontal_alignment = ALIGN_CENTER,
+    .vertical_alignment = ALIGN_END,
+    .offset = i32vec2_create(0, -HINT_PADDING_Y),
+    .size = i32vec2_create(0, 0) 
+  });
+  wc_set_hint_text_helper(hint_start, "[ENTER] Jatek inditasa");
+  tui_tuiobj_set_render_action(hint_start, wc_hint_render_action);
+
+  TuiObject *hint_quit = tui_create_tuiobj(window_root, &(TuiObjectDimensions){
+    .horizontal_alignment = ALIGN_END,
+    .vertical_alignment = ALIGN_END,
+    .offset = i32vec2_create(-HINT_PADDING_X, -HINT_PADDING_Y),
+    .size = i32vec2_create(0, 0) 
+  });
+  wc_set_hint_text_helper(hint_quit, "[Q] Kilepes");
+  tui_tuiobj_set_render_action(hint_quit, wc_hint_render_action);
 
   //just a 'div' to render list in the middle of the screen
   TuiObject *level_list = tui_create_tuiobj(window_root, &(TuiObjectDimensions){
-    .horizontal_alignment = ALIGN_START,
+    .horizontal_alignment = ALIGN_CENTER,
     .vertical_alignment = ALIGN_START,
     .offset = i32vec2_create(2, LEVEL_LIST_PADDING),
     .size = i32vec2_create(10, window_root->size.y - LEVEL_LIST_PADDING * 2) 
   });
+  window_root_state->level_list = level_list;
 
   //level_select_button entries
   FILE *f = fopen(".\\assets\\levels.txt", "r");
@@ -144,18 +182,6 @@ void w_levels_init(TuiObject *root, EventSystem *event_system){
     tui_events_subscribe(btn, button_on_event, event_system);
     row++;
   }
-
-  const char *back_button_str = "[Vissza]";
-  TuiObject *back_button = tui_create_tuiobj(window_root, &(TuiObjectDimensions){
-    .horizontal_alignment = ALIGN_START,
-    .vertical_alignment = ALIGN_END,
-    .offset = i32vec2_create(1, -1),
-    .size = i32vec2_create(strlen(back_button_str), 1) 
-  });
-  Levels_ButtonState *bs = tui_tuiobj_add_state(back_button, sizeof(Levels_ButtonState), NULL);
-  bs->window_state = window_root_state;
-  strncpy(bs->text, back_button_str, strlen(back_button_str));
-  tui_tuiobj_set_render_action(back_button, levels_button_render_action);
 
   //first button as default selected
   TuiObject *first_level = *((TuiObject **) darr_get(level_list->children, 0));

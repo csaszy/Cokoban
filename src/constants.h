@@ -4,4 +4,7 @@
 #define MAX_PLAYER_NAME_LENGTH 20
 #define MAX_LEVEL_NAME_LENGTH 20
 
+#define HINT_PADDING_X 2
+#define HINT_PADDING_Y 1
+
 #endif
