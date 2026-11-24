@@ -12,6 +12,7 @@ typedef struct {
     int boxcount;
     char *p_player_name;
     char level_name[MAX_LEVEL_NAME_LENGTH+1];
+    unsigned int move_count; 
 } Game_State;
 
 // from: http://sokoban.org/about_sokoban.php 

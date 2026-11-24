@@ -10,6 +10,7 @@ add_subdirectory(libs/econio)
 
 add_executable(game src/main.c
     src/debugmalloc.h
+    src/constants.h
     src/game.c
     src/game.h
     src/events.c
@@ -18,14 +19,18 @@ add_executable(game src/main.c
     src/darr.h
     src/tui.h
     src/tui.c
-    src/window_start.h
-    src/window_levels.h
-    src/window_game.h
-    src/constants.h
     src/window_context.h
+    src/window_context.c
+    src/window_start.h
+    src/window_start.c
+    src/window_levels.h
+    src/window_levels.c
+    src/window_game.h
+    src/window_game.c
+    src/window_scoreboard.h
+    src/window_scoreboard.c
     src/window_constants.h
     src/window_constants.c
-    src/window_scoreboard.h
     )
 
 set_target_properties(game PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR})
