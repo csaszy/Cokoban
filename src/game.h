@@ -34,6 +34,7 @@ typedef enum {
 } Game_Direction;
 
 int game_move_player(Game_Direction dir, Game_State *state);
+bool game_won(Game_State *game_state);
 Game_State *game_setup_game_state(Game_State *state, char *level_name, char *player_name);
 void game_free_game_state_internals(void *game_state);
 

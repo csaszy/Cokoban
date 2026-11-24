@@ -32,8 +32,20 @@ void game_root_on_event(TuiObject *self, TUI_Event event){
       game_free_game_state_internals(game_state);
       game_setup_game_state(game_state, game_state->p_level_name, game_state->p_player_name); 
       break;
+    case 'c': //cheat button
+        tui_events_push((TUI_Event){
+            .won_game.type = EVENT_WONGAME,
+            .won_game.move_count = game_state->move_count
+        }, self->p_event_system);
     default:
       break;
+  }
+
+  if(game_won(game_state)){
+    tui_events_push((TUI_Event){
+        .won_game.type = EVENT_WONGAME,
+        .won_game.move_count = game_state->move_count
+    }, self->p_event_system);
   }
 }
 

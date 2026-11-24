@@ -150,6 +150,10 @@ void game_free_game_state_internals(void *game_state){
     free(state->map);
 }
 
+bool game_won(Game_State *game_state){
+    return count_celltype(game_state, CT_BOX_ON_GOAL) == game_state->boxcount;
+}
+
 Game_State *game_setup_game_state(Game_State *state, char *level_name, char *player_name){
     if(state == NULL) return NULL;
 
