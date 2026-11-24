@@ -46,7 +46,6 @@ int cmp_score(const void *s1, const void *s2){
 }
 
 void load_scores(Darr *score_list, char *level_name){
-  
   char path[MAX_LEVEL_NAME_LENGTH + 40];
   sprintf(path, ".\\assets\\scoreboard\\%s.txt", level_name);
 
@@ -83,59 +82,28 @@ void scoreboard_score_list_render_acttion(TuiObject *self, Screen *s){
   Scoreboard_ScoreListState *self_state = (Scoreboard_ScoreListState *)self->state;
   Scoreboard_RootState *window_state = (Scoreboard_RootState *)self_state->window_state;
 
+  Cell sample = (Cell){
+    .foreground_color = COL_WHITE,
+    .background_color = COL_BLACK
+  };
+
   for(int i = 0; i < darr_size(window_state->score_list); ++i){
     Score *curr_score = (Score *)darr_get(window_state->score_list, i);
 
     int offset = 0;
     //player_name
-    offset = tui_puts(
-      self, 
-      curr_score->name, 
-      (Cell){
-        .foreground_color = COL_WHITE,
-        .background_color = COL_BLACK
-      },
-      i32vec2_create(0, i),
-      s
-    );
+    offset = tui_puts(self, curr_score->name, sample, i32vec2_create(0, i), s);
 
     //": "
-    offset += tui_puts(
-      self, 
-      ": ", 
-      (Cell){
-        .foreground_color = COL_WHITE,
-        .background_color = COL_BLACK
-      },
-      i32vec2_create(offset, i),
-      s
-    );
+    offset += tui_puts(self, ": ", sample, i32vec2_create(offset, i), s);
 
     //move count 
     char number_str[MAX_SCORE_NUMBER_LENGTH + 1];
     itoa(curr_score->number_of_moves, number_str, 10);
-    offset += tui_puts(
-      self, 
-      number_str, 
-      (Cell){
-        .foreground_color = COL_WHITE,
-        .background_color = COL_BLACK
-      },
-      i32vec2_create(offset, i),
-      s
-    );
+    offset += tui_puts(self, number_str, sample, i32vec2_create(offset, i), s);
 
-    //": "
-    offset += tui_puts(
-      self, 
-      " lepes", 
-      (Cell){
-        .foreground_color = COL_WHITE,
-        .background_color = COL_BLACK
-      },
-      i32vec2_create(offset, i),
-      s
-    );
+    //"lepes"
+    offset += tui_puts(self, " lepes", sample, i32vec2_create(offset, i), s);
   }
 } 
 

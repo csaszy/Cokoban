@@ -1,10 +1,12 @@
 #include "tui.h"
 #include "events.h"
 #include "constants.h"
+
 #include "window_start.h"
 #include "window_levels.h"
-#include "window_game.h"
 #include "window_scoreboard.h"
+#include "window_game.h"
+#include "window_win.h"
 
 #include "window_context.h"
 
@@ -73,5 +75,6 @@ void w_context_init(TuiObject *root, EventSystem *event_system){
   tui_events_subscribe(window_context_root, window_context_on_event, event_system);
   tui_tuiobj_add_state(window_context_root, sizeof(WindowContextState), NULL);
 
-  w_start_init(window_context_root, event_system);
+  w_win_init(window_context_root, event_system, "csaszy", "level002", 30);
+  //w_start_init(window_context_root, event_system);
 }

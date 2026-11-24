@@ -14,6 +14,7 @@ void wc_root_render_action(TuiObject *self, Screen *s){
 
 void wc_hint_render_action(TuiObject *self, Screen *s){
   HintState *state = (HintState *)self->state; 
+  if(state == NULL) return;
   int c = 0;
   for(int i = 0; i < self->size.x; ++i){
     tui_putc(self, (Cell) {
