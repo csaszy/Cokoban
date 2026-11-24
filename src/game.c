@@ -71,7 +71,7 @@ int count_celltype(Game_State *state, Game_CellType ct){
     int count = 0;
     for(int y = 0; y < state->size.y; ++y){
         for(int x = 0; x < state->size.x; ++x){
-            if(state->map[y][x] == ct) ++count;
+            if((char)state->map[y][x] == (char)ct) ++count;
         }
     }
     return count;

@@ -24,6 +24,7 @@ void on_finished_start(TuiObject *self, TUI_Event event){
 }
 
 void on_go_to_level_select(TuiObject *self, TUI_Event event){
+  (void)event; //shuts up the compiler about unused parameter warning
   tui_remove_and_free_all_child(self);
   w_levels_init(self, self->p_event_system);
 }

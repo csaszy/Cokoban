@@ -10,7 +10,7 @@ void game_root_on_event(TuiObject *self, TUI_Event event){
   if(event.type != EVENT_KEYPRESS) return;
   Game_State *game_state = (Game_State *)self->state;
 
-  switch (event.keypress.key) {
+  switch ((int)event.keypress.key) {
     case KEY_ESCAPE:
       tui_events_push((TUI_Event){
         .level_select.type = EVENT_GOTOLEVELSELECET,

@@ -156,7 +156,7 @@ void w_scoreboard_init(TuiObject *root, char *level_name, EventSystem *event_sys
     .offset = i32vec2_create(HINT_PADDING_X, -HINT_PADDING_Y),
     .size = i32vec2_create(0, 0) 
   });
-  wc_set_hint_text_helper(hint_back, "[ESC] Vissaz");
+  wc_set_hint_text_helper(hint_back, "[ESC] Vissza");
   tui_tuiobj_set_render_action(hint_back, wc_hint_render_action);
 
   TuiObject *hint_quit = tui_create_tuiobj(window_root, &(TuiObjectDimensions){

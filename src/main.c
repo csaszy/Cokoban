@@ -38,7 +38,7 @@ void main_game_loop(){
 
     econio_rawmode();
     bool exit = false;
-    EconioKey key;
+    int key; //can't be EconioKey because the compiler get's mad
     while (!exit)
     {
         tui_render(root, screen);

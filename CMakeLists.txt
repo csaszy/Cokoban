@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(Cokoban VERSION 1.0 LANGUAGES C)
 
-add_compile_options(-Wall -Wextra )
+add_compile_options(-Wall -Wextra -Werror)
 set(OUT_DIR ${CMAKE_SOURCE_DIR}/bin)
 
 add_subdirectory(libs/vec2)

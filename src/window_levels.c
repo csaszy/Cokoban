@@ -42,13 +42,13 @@ void button_on_event(TuiObject *self, TUI_Event event){
   Levels_ButtonState *state = (Levels_ButtonState *)self->state;
   if(self != state->window_state->selected_child) return;
 
-  switch (event.keypress.key) {
+  switch ((int)event.keypress.key) {
     case KEY_ENTER:{
       TUI_Event e = (TUI_Event) {
         .start_game.type = EVENT_STARTGAME,
         .start_game.level_name = state->text
       };
-      
+
       tui_events_push(e, self->p_event_system); 
       break;
     }
