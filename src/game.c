@@ -157,8 +157,8 @@ Game_State *game_setup_game_state(Game_State *state, char *level_name, char *pla
     state->wallcount = 0;
     state->boxcount = 0;
     state->p_player_name = player_name;
+    state->p_level_name = level_name;
     state->move_count = 0;
-    strncpy(state->level_name, level_name, MAX_LEVEL_NAME_LENGTH);
 
     char path[MAX_LEVEL_NAME_LENGTH + 50]; //yeah ik
     sprintf(path, ".\\assets\\levels\\%s.xsb", level_name);

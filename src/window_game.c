@@ -14,7 +14,6 @@ void game_root_on_event(TuiObject *self, TUI_Event event){
     case KEY_ESCAPE:
       tui_events_push((TUI_Event){
         .level_select.type = EVENT_GOTOLEVELSELECET,
-        .level_select.data = game_state->p_player_name
       }, self->p_event_system);
       break;
     case KEY_UP:
@@ -31,7 +30,7 @@ void game_root_on_event(TuiObject *self, TUI_Event event){
       break;
     case 'r':
       game_free_game_state_internals(game_state);
-      game_setup_game_state(game_state, game_state->level_name, game_state->p_player_name); 
+      game_setup_game_state(game_state, game_state->p_level_name, game_state->p_player_name); 
       break;
     default:
       break;

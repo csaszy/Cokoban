@@ -46,16 +46,18 @@ void button_on_event(TuiObject *self, TUI_Event event){
     case KEY_ENTER:{
       TUI_Event e = (TUI_Event) {
         .start_game.type = EVENT_STARTGAME,
+        .start_game.level_name = state->text
       };
-      strncpy(e.start_game.level_name, state->text, MAX_LEVEL_NAME_LENGTH);
+      
       tui_events_push(e, self->p_event_system); 
       break;
     }
     case 'd':{
       TUI_Event e = (TUI_Event) {
         .scoreboard.type = EVENT_GOTOSCOREBOARD,
+        .scoreboard.level_name = state->text
       };
-      strncpy(e.scoreboard.level_name, state->text, MAX_LEVEL_NAME_LENGTH);
+
       tui_events_push(e, self->p_event_system); 
       break;
     }

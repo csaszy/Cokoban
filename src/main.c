@@ -20,7 +20,7 @@ void main_game_loop(){
     terminal_window_size.y = csbi.srWindow.Bottom - csbi.srWindow.Top;
 
     Screen *screen = NULL;
-    if(terminal_window_size.x > 0 && terminal_window_size.y > 0){
+    if(terminal_window_size.x > 30 && terminal_window_size.y > 30){
         screen = tui_create_screen(terminal_window_size);
     }else{
         screen = tui_create_screen(default_screen_size);

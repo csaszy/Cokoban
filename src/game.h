@@ -11,7 +11,7 @@ typedef struct {
     int wallcount;
     int boxcount;
     char *p_player_name;
-    char level_name[MAX_LEVEL_NAME_LENGTH+1];
+    char *p_level_name;
     unsigned int move_count; 
 } Game_State;
 

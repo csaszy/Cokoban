@@ -54,8 +54,8 @@ void name_field_on_event(TuiObject *self, TUI_Event event){
     case KEY_ENTER:
       if(len == 0) break;
       tui_events_push((TUI_Event){
-        .level_select.type = EVENT_GOTOLEVELSELECET,
-        .level_select.data = state->str
+        .finsihed_start.type = EVENT_FINISHED_START,
+        .finsihed_start.player_name = state->str
       }, self->p_event_system);
       break;
     case KEY_BACKSPACE:
