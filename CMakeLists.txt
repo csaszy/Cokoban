@@ -5,37 +5,32 @@ add_compile_options(-Wall -Wextra -Werror)
 set(OUT_DIR ${CMAKE_SOURCE_DIR}/bin)
 
 add_subdirectory(libs/vec2)
+add_subdirectory(libs/darr)
 add_subdirectory(libs/tui)
 add_subdirectory(libs/econio)
 
 add_executable(game src/main.c
     src/debugmalloc.h
-    src/constants.h
     src/game.c
     src/game.h
-    src/events.c
-    src/events.h
-    src/darr.c
-    src/darr.h
-    src/tui.h
-    src/tui.c
-    src/window_context.h
-    src/window_context.c
-    src/window_start.h
-    src/window_start.c
-    src/window_levels.h
-    src/window_levels.c
-    src/window_game.h
-    src/window_game.c
-    src/window_scoreboard.h
-    src/window_scoreboard.c
-    src/window_win.h
-    src/window_constants.h
-    src/window_constants.c
-    src/window_win.c
+    src/tui_windows/window_context.h
+    src/tui_windows/window_context.c
+    src/tui_windows/window_start.h
+    src/tui_windows/window_start.c
+    src/tui_windows/window_levels.h
+    src/tui_windows/window_levels.c
+    src/tui_windows/window_game.h
+    src/tui_windows/window_game.c
+    src/tui_windows/window_scoreboard.h
+    src/tui_windows/window_scoreboard.c
+    src/tui_windows/window_win.h
+    src/tui_windows/window_constants.h
+    src/tui_windows/window_constants.c
+    src/tui_windows/window_win.c
     )
 
 set_target_properties(game PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR})
+target_include_directories(game PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 target_link_libraries(game vec2 tui econio)
 

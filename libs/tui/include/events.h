@@ -2,8 +2,6 @@
 #define EVENTS_H
 
 #include <econio/econio.h>
-#include "constants.h"
-#include "darr.h"
 
 typedef enum TUI_EVENT_TYPE{
     EVENT_KEYPRESS,

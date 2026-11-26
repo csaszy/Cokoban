@@ -1,6 +1,3 @@
-#include "tui.h"
-#include "constants.h"
-#include "game.h"
 #include "window_constants.h"
 
 #include "game.h"

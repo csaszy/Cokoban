@@ -1,12 +1,9 @@
-#include "tui.h"
-#include "events.h"
-#include "constants.h"
-
 #include "window_start.h"
 #include "window_levels.h"
 #include "window_scoreboard.h"
 #include "window_game.h"
 #include "window_win.h"
+#include "window_constants.h"
 
 #include "window_context.h"
 

@@ -2,7 +2,6 @@
 #define GAME_H
 
 #include <vec2/vec2.h>
-#include "constants.h"
 
 typedef struct {
     i32Vec2 player;

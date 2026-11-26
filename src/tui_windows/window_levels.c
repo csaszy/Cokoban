@@ -1,9 +1,7 @@
-#include "tui.h"
+#include <stdio.h>
 #include <vec2/vec2.h>
 #include <string.h>
 
-#include "game.h"
-#include "constants.h"
 #include "window_constants.h"
 
 #include "window_levels.h"

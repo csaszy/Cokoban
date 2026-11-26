@@ -1,8 +1,7 @@
-#include <vec2/vec2.h>
+#include <stdio.h>
 #include <string.h>
-#include "tui.h"
-#include "events.h"
-#include "constants.h"
+#include <vec2/vec2.h>
+
 #include "window_constants.h"
 
 #include "window_win.h"

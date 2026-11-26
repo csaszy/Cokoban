@@ -1,12 +1,10 @@
-#include <string.h>
 #include <math.h>
-#include <assert.h>
 
 #include "debugmalloc.h" 
 #include <vec2/vec2.h>
 #include <econio/econio.h> 
 
-#include "constants.h"
+#include "tui_windows/window_constants.h"
 #include "game.h"
 
 void game_print(Game_State *s){

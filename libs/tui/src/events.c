@@ -1,3 +1,5 @@
+
+#include <darr.h>
 #include "events.h"
 #include "debugmalloc.h"
 

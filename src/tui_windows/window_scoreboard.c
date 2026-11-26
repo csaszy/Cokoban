@@ -1,9 +1,9 @@
-#include "tui.h"
-#include <vec2/vec2.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-#include "events.h"
-#include "constants.h"
+#include <vec2/vec2.h>
+
 #include "window_constants.h"
 
 #include "window_scoreboard.h"

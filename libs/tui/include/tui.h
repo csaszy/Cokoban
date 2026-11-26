@@ -9,7 +9,6 @@
 #include "darr.h"
 #include "events.h"
 
-#include "debugmalloc.h"
 
 #define DEFAULT_CELL (Cell) {       \
   .background_color = COL_BLACK,    \
