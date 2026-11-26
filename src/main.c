@@ -1,12 +1,11 @@
 #include <econio/econio.h>
 #include <vec2/vec2.h>
-#include <stdbool.h>
 #include <locale.h>
 #include <windows.h>
+#include <stddef.h>
 
 #include "debugmalloc.h"
 
-#include "game.h"
 #include "tui_windows/window_context.h"
 #include <tui.h>
 

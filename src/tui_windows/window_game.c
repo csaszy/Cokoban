@@ -1,6 +1,10 @@
+#include <stddef.h> //no clue why it's bithcing about it here
+
 #include "window_constants.h"
 
 #include "game.h"
+
+#include "window_game.h"
 
 //window 
 void game_root_on_event(TuiObject *self, TUI_Event event){

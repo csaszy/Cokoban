@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <vec2/vec2.h>
 #include <string.h>
+#include <assert.h>
 
 #include "window_constants.h"
 

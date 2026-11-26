@@ -1,3 +1,4 @@
+#include <string.h>
 #include "window_constants.h"
 
 void wc_root_render_action(TuiObject *self, Screen *s){

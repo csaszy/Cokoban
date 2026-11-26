@@ -1,6 +1,8 @@
 #include "tui.h"
 #include "debugmalloc.h"
 
+#include <assert.h>
+
 void tui_SET_ALL(TuiObject *obj, Screen *s, Cell c){
   for(int x = 0; x < obj->size.x; x++){
     for(int y = 0; y < obj->size.y; y++){

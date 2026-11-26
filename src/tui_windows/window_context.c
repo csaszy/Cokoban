@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "window_start.h"
 #include "window_levels.h"
 #include "window_scoreboard.h"

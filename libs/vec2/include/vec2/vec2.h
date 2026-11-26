@@ -1,6 +1,12 @@
 #ifndef VEC2_H
 #define VEC2_H
 
+/**
+ * @defgroup vec2_module vec2 library 
+ * @brief 2 dimenziós vektor adattípus és a hozzá tartozó funkciók megvalósítása.
+ * @{
+ */
+
 typedef struct{
 	double x, y;
 }Vec2;
@@ -20,5 +26,6 @@ i32Vec2 i32vec2_create(int x, int y);
 i32Vec2 i32vec2_add(i32Vec2 v1, i32Vec2 v2);
 i32Vec2 i32vec2_sub(i32Vec2 v1, i32Vec2 v2);
 
+/** @} */
 
 #endif

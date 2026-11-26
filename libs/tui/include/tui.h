@@ -1,8 +1,11 @@
 #ifndef TUI_H
 #define TUI_H
 
-#include <assert.h>
-#include <string.h>
+/**
+ * @defgroup tui_module TUI library
+ * @brief Object tree, rendering and screen buffer.
+ * @{
+ */
 
 #include <econio/econio.h>
 #include <vec2/vec2.h>
@@ -59,6 +62,7 @@ typedef struct TuiObject{
 
 void tui_SET_ALL(TuiObject *obj, Screen *s, Cell c);
 
+/** @brief Creates a TuiObject ... */
 TuiObject *tui_create_tuiobj(TuiObject *parent, const TuiObjectDimensions *dimensions);
 void tui_free_tuiobj(TuiObject *tuiobj);
 void *tui_tuiobj_add_state(TuiObject *obj, int state_size, void (*state_free_action)(void *));
@@ -83,4 +87,5 @@ void tui_dispatch_events_in_queue(TuiObject *root, EventSystem *event_system);
 void tui_debug_tree_print_sep(int level);
 void tui_debug_tree(TuiObject *root, int level);
 
+/** @} */
 #endif

@@ -1,6 +1,12 @@
 #ifndef DARR_H
 #define DARR_H
 
+/**
+ * @defgroup darr_module darr library
+ * @brief Dinamikus listát megvalósító könyvtár.
+ * @{
+ */
+
 #define DARR_INITIAL_CAPACITY 8
 
 typedef struct Darr{
@@ -17,5 +23,7 @@ Darr *darr_push(Darr *arr, void *value);
 void darr_remove(Darr *arr, unsigned int index);
 void darr_print(Darr *arr);
 int darr_index_of(Darr *arr, void *value);
+
+/** @} */
 
 #endif

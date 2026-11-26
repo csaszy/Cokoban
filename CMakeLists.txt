@@ -39,3 +39,31 @@ add_custom_target(copy_assets
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/assets ${OUT_DIR}/assets
 )
 add_dependencies(game copy_assets)
+
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+    set(DOXYGEN_PROJECT_NAME "Cokoban")
+    set(DOXYGEN_OPTIMIZE_OUTPUT_FOR_C YES)
+    set(DOXYGEN_EXTRACT_ALL YES)
+    set(DOXYGEN_GENERATE_HTML NO)
+    set(DOXYGEN_GENERATE_LATEX YES)
+    set(DOXYGEN_USE_PDFLATEX YES)
+    set(DOXYGEN_LATEX_BATCHMODE YES)
+    set(DOXYGEN_PDF_HYPERLINKS YES)
+    set(DOXYGEN_INPUT_ENCODING UTF-8)
+    set(DOXYGEN_FILE_PATTERNS *.c *.h *.md)
+    set(DOXYGEN_USE_MDFILE_AS_MAINPAGE ${CMAKE_SOURCE_DIR}/docs/index.md)
+    set(DOXYGEN_EXCLUDE_PATTERNS */debugmalloc.h */econio*)
+
+    set(DOXYGEN_RECURSIVE YES)      # needed so src/tui_windows and the libs' subfolders are scanned
+    set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/docs_out)
+
+    doxygen_add_docs(docs
+        ${CMAKE_SOURCE_DIR}/docs
+        ${CMAKE_SOURCE_DIR}/libs/vec2
+        ${CMAKE_SOURCE_DIR}/libs/darr
+        ${CMAKE_SOURCE_DIR}/libs/tui
+        ${CMAKE_SOURCE_DIR}/src
+        COMMENT "GENERATING DOCS"
+    )
+endif()
