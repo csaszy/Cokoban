@@ -1,4 +1,30 @@
 
-# tui longer explanation 
+# A _tui_ könyvtár leírása 
 
-type shit
+## Célja
+
+A projekt _Terminal User Interface_-e (később: TUI) elkészítése közben felmerülő kérdéses részek/problémák kiküszöbölésére lett létrehozva ez a külön könyvtár. Kihívások elsősorban a menürendszer felépítése során jelentkeztek, pl.:
+* hogyan kezeljük a menük között áthaladást?
+* hogyan kezeljük az egyes menük működéséhez szükséges állapotokat (hol hozzuk létre, mikor szabadítsuk fel, stb…)?
+* hogyan lehetne átláthatóan meghatározni egy-egy UI elem helyzetét?
+
+Ezek, és sok más hasonló probléma megoldására létrehozott rendszer végül egy különálló könyvátrrá nőtte ki magát. Ez egyben azt is jelenti, hogy teljesen különálló magától a Cokoban játéktól, így más TUI-eket is meg lehet vele valósítani. 
+
+## Működése
+
+### A UI fa felépítése
+
+Központban a @ref TuiObject struktúra áll. Ez definiál egy UI elemet, ami a renderelés során a képernyőre kerül. A definíciójából látható, hogy mutat egy szülő elemre, illetve egy dinamikus listára, ami pointereket tartalmaz a gyermekeire, így adatstruktúra szempontjából fa típusú. Fontos megjegyezni, hogy a gyermekek listája azért nem magukat a gyermek TuiObjekumokat tárolja, hiszen ebben az esetben, a lista átméretezésével invalidálódna az összes külső pointer, amely valamely leszármazottra mutat. A jelenlegi megvalósítással nyugodtan lehet pointerekkel hivatkozni az egyes TuiObjektumokra. 
+
+Ezek létrehozásakor lehetőség adódik egy szülő objektum megadására (@ref tui_create_tuiobj), mely esetben az adott gyermek autómatikusan csatlakozik a fára. Természetesen, lehetőség van egy későbbi ponton manuálisan csatolni a @ref tui_attach_tuiobj függvénnyel. 
+
+Minden TuiObject a heapen foglal helyet, így szükséges beszélni az ezek által lefoglalt memóriaterület felszabadításáról is. A @ref tui_free_tuiobj függvény rekurzívan bejárja a fát egy adott gyökér elemtől lefelé, és először természetesen felszabadítja az adott objektum összes gyermekét majd után saját magát, és ha volt, az állapotát tartalmazó adatterületet is. Ha mindezzel végzett már csak az a dolga, hogy amennyiben van szülő objektuma, annak gyermekei közül kivegye a saját magára mutató pointert. A @ref tui_remove_and_free_all_child függvény hasonlóan működik, annyi különbséggel, hogy ez nem „töröli” az adott objektumot, amire felhasználó ezt meghívta.
+
+A UI objektumok fa strukturába rendezése elsősorban a renderelés, azaz a vizuális megjelenítés során válik igazán hasznossá. Itt ugyanis kihasználhatjuk két külön emel között szülő-leszármazott kapcsolatot, például relatív pozícionáláshoz. A @ref TuiAlignment @ref TuiObject::horizontal_alignment és a @ref TuiObject::vertical_alignment fieldek beállításával a felhasználó megadhatja, hogy az adott objektum a szülőjén belül hol jelenjen meg, és ezt az @ref TuiObject::offset -tel tovább finomíthatja. A rendererés során ezek alapján kiszámítható lesz az egyes objektumok globális/abszolút pozíciója, azaz az adott UI elem bal felső sarkának koordinátája.
+
+### Renderelés
+
+Maga a megjelenítés a @ref tui_render függvény meghívásával indul meg. Ez belül meghívja, a felhasználó számára is elérhető @ref tui_render_accumulate functiont, amely rekurzívan bejárja a UI fát a paraméterként megadott kezdő elemtől. Ezen belül először meghívásra kerül az adott objektum @ref TuiObject::render_action nevezetű tagjával indirekt módon hivatkozott függvény, amiben a felhasználó előre meghatározta az adott @ref TuiObject _aktuális_ kinézetét. Az utóbbi subrutinon belül a @ref tui_putc és @ref tui_puts függvények segítségével lehet karaktereket helyezni a képernyőre. Az utóbbiakat a @ref Cell típus alkalmazásával lehet megadni. Fontos megjegyezni, hogy a jelenlegi verzióban egy adott gyermek nem rajzolhat saját maga, vagy szülője által lefedett területen kívülre. Erre a _callback függvényes_ megoldásra azért van szükség, mert így az egyes @ref TuiObject -ek figyelembe vehetik az aktuális állapotukat, így változtathatják kinézetüket renderelések között. Ezek után visszatérünk a @ref tui_render_accumulate függvénybe, ahol a gyermekek globális pozíciójának kiszámítása, és azok renderelése következik az imént is melített rekurzív módon.
+
+Eddig a pontig a képernyőn még mindig nem jelent meg semmi. Ezt a feladatot majd a @ref tui_draw_diff függvény fogja ellátni, de még előtte érdemes említés tenni a @ref Screen struktúráról. A TUI könyvtár kezdeti verzióinak tesztelése közben felmerült egy probléma. Ha a képernyőre írást közvetlenül a @ref TuiObject::render_action function végzné olyan módon, hogy az _econio_ könyvtár segítségével, a terminál kurzorát a megfelelő helyre pozícionálva, a karaktereket egyesével nyomtatná ki, az rendkívül lassú lenne. Ennek a folyamatnak az optimalizálása érdekében létezik a @ref Screen struktúrára. A program indításakor szükséges egy _singelton_ @ref Screen típus inicializálására, amit a @ref tui_create_screen függvény, felszabadítását pedig a @ref tui_free_screen függvény segítségével lehet megtenni. Ezt a @ref tui_render függvénynek kell paraméterként megadni, ami később továbbítja azt a rendering pipeline további részeinek. A @ref Screen::size field reprezentálja a terminál teljes felületén, a TUI által megjelenítésre használt részt (size.x := szélesség, size.y := magasság). Ezen kívül még tartalmaz két buffert, melyek mérete külön-külön: `Screen.size.x * Screen.size.y * sizeof(Cell)`. A @ref tui_putc és @ref tui_puts függvények a @ref Screen::curr_content bufferbe írnak. Utóbbit később a @ref tui_draw_diff subrutin összehasonlítja a @ref Screen::prev_content pufferben tárolt, az előző render során, a képernyőn megjelenített cellák sokaságával, és csak azokban a pontokban fog ismért kiírást végezni, ahol a két bufferben tárolt adat eltér. Ezzel a megoldással ugyan jóval több memóriát használ a könyvtár, de lényegesen gyorsítja a megjelenítést. 
+

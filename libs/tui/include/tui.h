@@ -2,8 +2,8 @@
 #define TUI_H
 
 /**
- * @defgroup tui_module TUI library
- * @brief Object tree, rendering and screen buffer.
+ * @defgroup tui_module TUI könyvtár 
+ * @brief UI objektumok, azok renderelése, és eventek.
  * @{
  */
 

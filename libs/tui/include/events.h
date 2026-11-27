@@ -1,6 +1,12 @@
 #ifndef EVENTS_H
 #define EVENTS_H
 
+/**
+ * @addtogroup tui_module TUI könyvtár 
+ * @brief TUI eventek.
+ * @{
+ */
+
 #include <econio/econio.h>
 
 typedef enum TUI_EVENT_TYPE{
@@ -58,4 +64,5 @@ typedef struct{
 EventSystem *tui_create_event_system();
 void tui_free_event_system(EventSystem *event_system);
 
+/** @} */
 #endif
