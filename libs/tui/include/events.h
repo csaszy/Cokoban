@@ -2,7 +2,7 @@
 #define EVENTS_H
 
 /**
- * @addtogroup tui_module TUI könyvtár 
+ * @addtogroup tui_module 
  * @brief TUI eventek.
  * @{
  */

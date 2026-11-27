@@ -2,7 +2,7 @@
 #define TUI_H
 
 /**
- * @defgroup tui_module TUI könyvtár 
+ * @defgroup tui_module tui könyvtár 
  * @brief UI objektumok, azok renderelése, és eventek.
  * @{
  */
